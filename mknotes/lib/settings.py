@@ -9,18 +9,8 @@ CONFIG_SECTION = "settings"
 DEFAULT_CONFIG = {
     "notes_location": path.join(DEFAULT_LOC, "notes"),
     "editor": "vim",
+    "view-mode": "combo",
 }
-
-
-def _validate_editor(tool: str) -> str:
-    default_editors = [tool, "vim", "nano"]
-
-    for editor in default_editors:
-        if which(editor):
-            return which(editor)
-
-    raise KeyError("Cannot find usable editor {}".format(default_editors))
-
 
 def _read_config_file(config_file: dict, settings: dict) -> dict:
     config = ConfigParser()
@@ -40,6 +30,26 @@ def _write_config_file(config_file: str, config_to_save: dict):
         config.write(configfile)
 
 
+def _config_error(config: str, message: str):
+    raise ValueError("ERROR: {} configuration: {}".format(config, message))
+
+
+def _validate_editor(tool: str) -> str:
+    default_editors = [tool, "vim", "nano"]
+
+    for editor in default_editors:
+        if which(editor):
+            return which(editor)
+
+    _config_error("Editor", "Cannot find usable editor {}".format(default_editors))
+
+
+def _validate_view(config: dict):
+    options = ["interactive", "dump", "combo"]
+    if config["view-mode"] not in options:
+        _config_error("view-mode", "Not an option: {}".format(options))
+
+
 def _getConfig() -> dict:
     settings = DEFAULT_CONFIG
     config_file = path.expanduser(CONFIG_FILE_NAME)
@@ -55,6 +65,8 @@ def _getConfig() -> dict:
     if path.exists(settings["editor"]) is False:
         settings["editor"] = _validate_editor(settings["editor"])
         _write_config_file(config_file, settings)
+
+    _validate_view(settings)
 
     return settings
 
