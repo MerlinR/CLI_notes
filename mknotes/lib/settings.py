@@ -12,6 +12,7 @@ DEFAULT_CONFIG = {
     "view-mode": "combo",
 }
 
+
 def _read_config_file(config_file: dict, settings: dict) -> dict:
     config = ConfigParser()
     config.read(config_file)
@@ -44,10 +45,12 @@ def _validate_editor(tool: str) -> str:
     _config_error("Editor", "Cannot find usable editor {}".format(default_editors))
 
 
-def _validate_view(config: dict):
+def _validate_view(view_mode: str) -> str:
     options = ["interactive", "dump", "combo"]
-    if config["view-mode"] not in options:
-        _config_error("view-mode", "Not an option: {}".format(options))
+    if view_mode not in options:
+        return "combo"
+    else:
+        return view_mode
 
 
 def _getConfig() -> dict:
@@ -59,15 +62,13 @@ def _getConfig() -> dict:
     else:
         if not path.exists(path.dirname(config_file)):
             os.makedirs(path.dirname(config_file))
-        if not path.exists(config_file):
-            _write_config_file(config_file, settings)
 
     if path.exists(settings["editor"]) is False:
         settings["editor"] = _validate_editor(settings["editor"])
-        _write_config_file(config_file, settings)
 
-    _validate_view(settings)
+    settings["view-mode"] = _validate_view(settings["view-mode"])
 
+    _write_config_file(config_file, settings)
     return settings
 
 
