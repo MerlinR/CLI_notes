@@ -2,6 +2,8 @@
 import argparse
 import os
 
+from lib.settings import config
+
 
 def parse_args():
     arguments = argparse.ArgumentParser(
