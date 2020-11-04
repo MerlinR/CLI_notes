@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 from configparser import ConfigParser
-from os import path, makedirs
+from os import makedirs, path
 from shutil import which
 
 DEFAULT_LOC = path.join(path.expanduser("~"), ".mknotes")
@@ -65,7 +65,6 @@ def _getConfig() -> dict:
 
     if path.exists(settings["notes_location"]) is False:
         makedirs(settings["notes_location"])
-
 
     if path.exists(settings["editor"]) is False:
         settings["editor"] = _validate_editor(settings["editor"])
