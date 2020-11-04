@@ -2,6 +2,7 @@
 Simple cli note tool and orgniser. Using Markdown for human readable and easily createable note files.
 
 ## Usage
+mknotes <name>                      Outputs the notes
 
 ### Options
     -a | --add          <name>  Add a new note

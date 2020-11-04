@@ -1,9 +1,9 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from configparser import ConfigParser
-from os import path
+from os import path, makedirs
 from shutil import which
 
-DEFAULT_LOC = "~/.mknotes"
+DEFAULT_LOC = path.join(path.expanduser("~"), ".mknotes")
 CONFIG_FILE_NAME = path.join(DEFAULT_LOC, "mknotes.cfg")
 CONFIG_SECTION = "settings"
 DEFAULT_CONFIG = {
@@ -61,7 +61,11 @@ def _getConfig() -> dict:
         settings = _read_config_file(config_file, settings)
     else:
         if not path.exists(path.dirname(config_file)):
-            os.makedirs(path.dirname(config_file))
+            makedirs(path.dirname(config_file))
+
+    if path.exists(settings["notes_location"]) is False:
+        makedirs(settings["notes_location"])
+
 
     if path.exists(settings["editor"]) is False:
         settings["editor"] = _validate_editor(settings["editor"])
