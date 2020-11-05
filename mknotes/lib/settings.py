@@ -10,6 +10,7 @@ DEFAULT_CONFIG = {
     "notes_location": path.join(DEFAULT_LOC, "notes"),
     "editor": "vim",
     "view-mode": "combo",
+    "extension": "md",
 }
 
 
@@ -46,11 +47,22 @@ def _validate_editor(tool: str) -> str:
 
 
 def _validate_view(view_mode: str) -> str:
-    options = ["interactive", "dump", "combo"]
+    options = ["combo", "dump", "interactive"]
     if view_mode not in options:
-        return "combo"
+        return options[0]
     else:
         return view_mode
+
+
+def _validate_extension(extension:str) -> str:
+    valid_extensions = ["md", "markdown", "mdown", "mkdn", "mkd", "mdwn", "mdtxt", "mdtext"]
+    
+    if extension[:1] == ".":
+        extension = extension[1:]
+    if extension.lower() in valid_extensions:
+        return extension
+    else:
+        return valid_extensions[0]
 
 
 def _getConfig() -> dict:
@@ -70,6 +82,7 @@ def _getConfig() -> dict:
         settings["editor"] = _validate_editor(settings["editor"])
 
     settings["view-mode"] = _validate_view(settings["view-mode"])
+    settings["extension"] = _validate_extension(settings["extension"])
 
     _write_config_file(config_file, settings)
     return settings
