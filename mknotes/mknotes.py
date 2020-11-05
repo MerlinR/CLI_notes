@@ -1,24 +1,32 @@
 #!/usr/bin/python3
 import argparse
-from os import listdir, path, remove
+from os import listdir, makedirs, rmdir, path, remove
 from pathlib import Path
 from subprocess import call
-from typing import Dict, Optional
+from typing import Optional
 
 from lib.settings import config
 
 
-def alter_note(alter_note: Dict, config: Dict):
-    alter_note.alter = path.splitext(alter_note.alter)[0]
+def alter_note(alter_note: dict, config: dict):
+    title = alter_note.alter.split(".")[-1]
+    
     note_path = path.join(
-        config["notes_location"], "{}.{}".format(alter_note.alter, "md")
+            config["notes_location"], *alter_note.alter.split(".")[:-1], (title + "." + config["extension"])
     )
+    
+    if path.exists(path.dirname(note_path)) is False:
+        makedirs(path.dirname(note_path))
 
     if path.isfile(note_path) is False:
         with open(note_path, "w") as note:
-            note.write("#{}".format(alter_note.alter))
+            note.write("#{}\n".format(title))
 
     call([config["editor"], note_path])
+
+
+def remove_suffix(string: str) -> str:
+    return path.splitext(string)[0]
 
 
 def confirm_choice(msg: Optional[str] = False) -> bool:
@@ -34,19 +42,30 @@ def confirm_choice(msg: Optional[str] = False) -> bool:
     return True if (confirm == "c") else False
 
 
-def delete_note(rm_note: Dict, config: Dict):
-    rm_note.delete = path.splitext(rm_note.delete)[0]
+def delete_note(rm_note: dict, config: dict):
+    title = rm_note.delete.split(".")[-1]
+    
     note_path = path.join(
-        config["notes_location"], "{}.{}".format(rm_note.delete, "md")
+            config["notes_location"], *rm_note.delete.split(".")[:-1], (title + "." + config["extension"])
     )
 
     if path.exists(note_path) is False:
-        print(f"No note called {rm_note.delete}")
+        print(f"No note: {rm_note.delete}")
     elif confirm_choice("Do you wish to delete {}".format(rm_note.delete)):
-        remove(note_path)
+        try:
+            remove(note_path)
+            if not listdir(path.dirname(note_path)):
+                rmdir(path.dirname(note_path))
+            print(f"Deleted {rm_note.delete}")
+        except:
+            print("Could not delete")
 
 
-def parse_args() -> Dict:
+def list_notes(config: dict):
+    print("TODO")
+
+
+def parse_args() -> dict:
     arguments = argparse.ArgumentParser(
         description="mknotes. Simple cli tool for creating and managing markdown notes."
     )
