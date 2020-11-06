@@ -1,24 +1,24 @@
 #!/usr/bin/python3
 import argparse
-from os import listdir, makedirs, rmdir, path, remove
+import os
 from pathlib import Path
 from subprocess import call
 from typing import Optional
 
 from lib.settings import config
-
+from lib.misc import bcolors 
 
 def alter_note(alter_note: dict, config: dict):
     title = alter_note.alter.split(".")[-1]
     
-    note_path = path.join(
+    note_path = os.path.join(
             config["notes_location"], *alter_note.alter.split(".")[:-1], (title + "." + config["extension"])
     )
     
-    if path.exists(path.dirname(note_path)) is False:
-        makedirs(path.dirname(note_path))
+    if os.path.exists(os.path.dirname(note_path)) is False:
+        makedirs(os.path.dirname(note_path))
 
-    if path.isfile(note_path) is False:
+    if os.path.isfile(note_path) is False:
         with open(note_path, "w") as note:
             note.write("#{}\n".format(title))
 
@@ -26,7 +26,7 @@ def alter_note(alter_note: dict, config: dict):
 
 
 def remove_suffix(string: str) -> str:
-    return path.splitext(string)[0]
+    return os.path.splitext(string)[0]
 
 
 def confirm_choice(msg: Optional[str] = False) -> bool:
@@ -45,24 +45,46 @@ def confirm_choice(msg: Optional[str] = False) -> bool:
 def delete_note(rm_note: dict, config: dict):
     title = rm_note.delete.split(".")[-1]
     
-    note_path = path.join(
+    note_path = os.path.join(
             config["notes_location"], *rm_note.delete.split(".")[:-1], (title + "." + config["extension"])
     )
 
-    if path.exists(note_path) is False:
+    if os.path.exists(note_path) is False:
         print(f"No note: {rm_note.delete}")
     elif confirm_choice("Do you wish to delete {}".format(rm_note.delete)):
         try:
-            remove(note_path)
-            if not listdir(path.dirname(note_path)):
-                rmdir(path.dirname(note_path))
+            os.remove(note_path)
+            if not os.os.listdir(os.path.dirname(note_path)):
+                os.rmdir(os.path.dirname(note_path))
             print(f"Deleted {rm_note.delete}")
         except:
             print("Could not delete")
 
 
 def list_notes(config: dict):
-    print("TODO")
+
+    def print_notes(cur_path: str, indent: int = 0):
+        prev_item = ""
+        for indx, item in enumerate(sorted(os.listdir(cur_path))):
+             
+            if "{}.{}".format(prev_item, config["extension"]) == item:
+                continue
+            
+            if os.path.isdir(os.path.join(cur_path, item)) and "{}.{}".format(item, config["extension"]) in os.listdir(cur_path):
+                print("--" * indent + f"{bcolors.CYAN}{remove_suffix(item)}*{bcolors.ENDC}")
+            elif os.path.isdir(os.path.join(cur_path, item)):
+                print("--" * indent + f"{remove_suffix(item)}{bcolors.ENDC}")
+            else:
+                print("--" * indent + f"{bcolors.CYAN}{remove_suffix(item)}{bcolors.ENDC}")
+
+
+            if os.path.isdir(os.path.join(cur_path, item)):
+                print_notes(os.path.join(cur_path, item), indent+1)
+            prev_item = item
+
+    
+    print_notes(config["notes_location"])
+
 
 
 def parse_args() -> dict:
