@@ -70,6 +70,8 @@ def delete_note(rm_note: dict, config: dict):
 def list_notes(config: dict):
     def print_notes(cur_path: str, indent: int = 0):
         prev_item = ""
+        ident_str = f"{bcolors.BRIGHTGREY}--{bcolors.ENDC}"
+
         for indx, item in enumerate(sorted(os.listdir(cur_path))):
 
             if "{}.{}".format(prev_item, config["extension"]) == item:
@@ -79,13 +81,13 @@ def list_notes(config: dict):
                 item, config["extension"]
             ) in os.listdir(cur_path):
                 print(
-                    "--" * indent
-                    + f"{bcolors.CYAN}{remove_suffix(item)}*{bcolors.ENDC}"
+                    f"{ident_str}" * indent
+                    + f"{bcolors.BOLD}{bcolors.WHITE}{remove_suffix(item)}*{bcolors.ENDC}"
                 )
             elif os.path.isdir(os.path.join(cur_path, item)):
-                print("--" * indent + f"{remove_suffix(item)}{bcolors.ENDC}")
+                print(f"{ident_str}" * indent + f"{bcolors.FAINT}{bcolors.WHITE}{remove_suffix(item)}{bcolors.ENDC}")
             else:
-                print("--" * indent + f"{bcolors.CYAN}{remove_suffix(item)}{bcolors.ENDC}")
+                print(f"{ident_str}" * indent + f"{bcolors.WHITE}{remove_suffix(item)}{bcolors.ENDC}")
 
             if os.path.isdir(os.path.join(cur_path, item)):
                 print_notes(os.path.join(cur_path, item), indent + 1)
