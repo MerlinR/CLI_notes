@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import argparse
 import os
+import sys
 from pathlib import Path
 from subprocess import call
 from typing import Optional
@@ -104,6 +105,10 @@ def parse_args() -> dict:
 
     args = arguments.parse_args()
 
+    if len(sys.argv) < 2:
+        parser.print_usage()
+        sys.exit(1)
+    
     return args
 
 
