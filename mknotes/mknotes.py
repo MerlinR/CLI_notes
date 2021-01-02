@@ -8,7 +8,7 @@ from typing import Optional
 
 from lib.misc import colorText, Color, Style
 from lib.settings import config
-
+from lib.parseMarkdown import MarkdownParse
 
 def alter_note(alter_note: dict, config: dict):
     title = alter_note.alter.split(".")[-1]
@@ -66,6 +66,14 @@ def delete_note(rm_note: dict, config: dict):
         except:
             print("Could not delete")
 
+def search_note_by_name(search_note: dict, config: dict):
+    title = search_note.search.split(".")[-1]
+    for path in Path(config["notes_location"]).rglob(f"*{title}*"):
+        if os.path.isdir(path):
+            continue
+        #print(os.path.relpath(path, config["notes_location"]))
+        print(path)
+
 
 def list_notes(config: dict):
     def print_notes(cur_path: str, indent: int = 0):
@@ -93,7 +101,7 @@ def list_notes(config: dict):
                 print(f"{ident_str}" * indent + f"{colorText.color()}{remove_suffix(item)}{colorText.reset()}")
 
             if os.path.isdir(os.path.join(cur_path, item)):
-                print_notes(os.path.join(cur_path, item), indent + 1)
+                print_notes(os.path.join(cur_path, item), indent = indent + 1)
             prev_item = item
 
     print_notes(config["notes_location"])
@@ -103,7 +111,11 @@ def parse_args() -> dict:
     arguments = argparse.ArgumentParser(
         description="mknotes. Simple cli tool for creating and managing markdown notes."
     )
-
+    
+    arguments.add_argument(
+        dest="view", nargs='?', type=str, help="View specific note, will do a search"
+    )
+    
     arguments.add_argument(
         "-a", "--alter", dest="alter", type=str, help="Add/Edit note"
     )
@@ -112,6 +124,9 @@ def parse_args() -> dict:
     )
     arguments.add_argument(
         "-l", "--list", dest="list", action="store_true", help="list notes"
+    )
+    arguments.add_argument(
+        "-s", "--search", dest="search", type=str, help="Search for note by title"
     )
 
     args = arguments.parse_args()
@@ -126,7 +141,12 @@ def parse_args() -> dict:
 def main():
     arguments = parse_args()
 
-    if arguments.alter:
+    if arguments.view:
+        note = MarkdownParse(arguments.view[0])
+        note.print()
+    elif arguments.search:
+        search_note_by_name(arguments, config)
+    elif arguments.alter:
         alter_note(arguments, config)
     elif arguments.delete:
         delete_note(arguments, config)
