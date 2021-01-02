@@ -5,8 +5,7 @@ Simple cli note tool and orgniser. Using Markdown for human readable and easily 
 mknotes <name>                      Outputs the notes
 
 ### Options
-    -a | --add          <name>  Add a new note
-    -e | --edit         <name>  Edit notes
+    -a | --alter        <name>  Add/Alter a new note
     -d | --delete       <name>  Deletes notes
     -l | --list                 List the notes
     -ll| --sub-list             List notes and their table of contents
