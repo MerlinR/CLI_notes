@@ -54,9 +54,18 @@ def _validate_view(view_mode: str) -> str:
         return view_mode
 
 
-def _validate_extension(extension:str) -> str:
-    valid_extensions = ["md", "markdown", "mdown", "mkdn", "mkd", "mdwn", "mdtxt", "mdtext"]
-    
+def _validate_extension(extension: str) -> str:
+    valid_extensions = [
+        "md",
+        "markdown",
+        "mdown",
+        "mkdn",
+        "mkd",
+        "mdwn",
+        "mdtxt",
+        "mdtext",
+    ]
+
     if extension[:1] == ".":
         extension = extension[1:]
     if extension.lower() in valid_extensions:

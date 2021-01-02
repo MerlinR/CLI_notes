@@ -6,16 +6,19 @@ from pathlib import Path
 from subprocess import call
 from typing import Optional
 
+from lib.misc import bcolors
 from lib.settings import config
-from lib.misc import bcolors 
+
 
 def alter_note(alter_note: dict, config: dict):
     title = alter_note.alter.split(".")[-1]
-    
+
     note_path = os.path.join(
-            config["notes_location"], *alter_note.alter.split(".")[:-1], (title + "." + config["extension"])
+        config["notes_location"],
+        *alter_note.alter.split(".")[:-1],
+        (title + "." + config["extension"]),
     )
-    
+
     if os.path.exists(os.path.dirname(note_path)) is False:
         makedirs(os.path.dirname(note_path))
 
@@ -45,9 +48,11 @@ def confirm_choice(msg: Optional[str] = False) -> bool:
 
 def delete_note(rm_note: dict, config: dict):
     title = rm_note.delete.split(".")[-1]
-    
+
     note_path = os.path.join(
-            config["notes_location"], *rm_note.delete.split(".")[:-1], (title + "." + config["extension"])
+        config["notes_location"],
+        *rm_note.delete.split(".")[:-1],
+        (title + "." + config["extension"]),
     )
 
     if os.path.exists(note_path) is False:
@@ -63,29 +68,30 @@ def delete_note(rm_note: dict, config: dict):
 
 
 def list_notes(config: dict):
-
     def print_notes(cur_path: str, indent: int = 0):
         prev_item = ""
         for indx, item in enumerate(sorted(os.listdir(cur_path))):
-             
+
             if "{}.{}".format(prev_item, config["extension"]) == item:
                 continue
-            
-            if os.path.isdir(os.path.join(cur_path, item)) and "{}.{}".format(item, config["extension"]) in os.listdir(cur_path):
-                print("--" * indent + f"{bcolors.CYAN}{remove_suffix(item)}*{bcolors.ENDC}")
+
+            if os.path.isdir(os.path.join(cur_path, item)) and "{}.{}".format(
+                item, config["extension"]
+            ) in os.listdir(cur_path):
+                print(
+                    "--" * indent
+                    + f"{bcolors.CYAN}{remove_suffix(item)}*{bcolors.ENDC}"
+                )
             elif os.path.isdir(os.path.join(cur_path, item)):
                 print("--" * indent + f"{remove_suffix(item)}{bcolors.ENDC}")
             else:
                 print("--" * indent + f"{bcolors.CYAN}{remove_suffix(item)}{bcolors.ENDC}")
 
-
             if os.path.isdir(os.path.join(cur_path, item)):
-                print_notes(os.path.join(cur_path, item), indent+1)
+                print_notes(os.path.join(cur_path, item), indent + 1)
             prev_item = item
 
-    
     print_notes(config["notes_location"])
-
 
 
 def parse_args() -> dict:
@@ -106,9 +112,9 @@ def parse_args() -> dict:
     args = arguments.parse_args()
 
     if len(sys.argv) < 2:
-        parser.print_usage()
+        arguments.print_usage()
         sys.exit(1)
-    
+
     return args
 
 
