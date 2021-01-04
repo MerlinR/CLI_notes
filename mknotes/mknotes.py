@@ -6,9 +6,10 @@ from pathlib import Path
 from subprocess import call
 from typing import Optional
 
-from lib.misc import colorText, Color, Style
+from lib.misc import colorText, Color, Style, Note
 from lib.settings import config
 from lib.parseMarkdown import MarkdownParse
+
 
 def alter_note(alter_note: dict, config: dict):
     title = alter_note.alter.split(".")[-1]
@@ -32,6 +33,25 @@ def alter_note(alter_note: dict, config: dict):
 def remove_suffix(string: str) -> str:
     return os.path.splitext(string)[0]
 
+
+def note_selection(msg: str, options: list) -> bool:
+    if msg:
+        print(msg)
+
+    option = None
+    while True:
+        option = input("Note selection or [q]uit: ")
+        try:
+            option = int(option)
+        except:
+            pass
+        if option in options:
+            break
+        if option == 'q':
+            sys.exit(1)
+        print(f"\n Invalid Option. {msg}")
+                
+    return option
 
 def confirm_choice(msg: Optional[str] = False) -> bool:
     if msg:
@@ -66,19 +86,38 @@ def delete_note(rm_note: dict, config: dict):
         except:
             print("Could not delete")
 
+
 def search_note_by_name(search_note: dict, config: dict):
-    title = search_note.search.split(".")[-1]
-    for path in Path(config["notes_location"]).rglob(f"*{title}*"):
-        if os.path.isdir(path):
-            continue
-        #print(os.path.relpath(path, config["notes_location"]))
-        print(path)
+    notes = get_note_list(config)
+    relevent_notes = []
+    for note in notes:
+        if search_note.search in str(note.min_path):
+            relevent_notes.append(note)
+    if not relevent_notes:
+        print(f"No matching notes for {search_note.search}")
+    elif len(relevent_notes) == 1:
+        print(note)
+    else:
+        list_notes(relevent_notes, config, full_path = True) 
+        options = []
+        for note in relevent_notes:
+            options.append(note.count_id)
+            options.append(note.name)
+        choice = note_selection(f"Please select a note: {options}", options)
+        for note in relevent_notes:
+            if isinstance(choice, int):
+                if note.count_id == choice:
+                    print(note)
+                    break
+            else:
+                if note.name == choice:
+                    print(note)
+                    break
 
 
-def list_notes(config: dict):
-    def print_notes(cur_path: str, indent: int = 0):
+def get_note_list(config: dict):
+    def search_all_notes(cur_path: str, indent: int = 0, dir_list = []):
         prev_item = ""
-        ident_str = f"{colorText.color(Color.GREY)}--{colorText.reset()}"
 
         for indx, item in enumerate(sorted(os.listdir(cur_path))):
 
@@ -89,22 +128,49 @@ def list_notes(config: dict):
                 item, config["extension"]
             ) in os.listdir(cur_path):
                 # Note with subfolder
-                print(
-                    f"{ident_str}" * indent
-                    + f"{colorText.color()}{remove_suffix(item)}{colorText.reset()}"
-                )
+                dir_list.append(Note(os.path.join(cur_path, item), indent))
             elif os.path.isdir(os.path.join(cur_path, item)):
                 # Subfolder only
-                print(f"{ident_str}" * indent + f"{colorText.color(style = Style.ITALIC)}*{remove_suffix(item)}{colorText.reset()}")
+                dir_list.append(Note(os.path.join(cur_path, item), indent, True))
             else:
                 # Note Only
-                print(f"{ident_str}" * indent + f"{colorText.color()}{remove_suffix(item)}{colorText.reset()}")
+                dir_list.append(Note(os.path.join(cur_path, item), indent))
 
             if os.path.isdir(os.path.join(cur_path, item)):
-                print_notes(os.path.join(cur_path, item), indent = indent + 1)
+                search_all_notes(os.path.join(cur_path, item), indent = indent + 1, dir_list = dir_list)
             prev_item = item
+        return dir_list
+    
+    notes = search_all_notes(config["notes_location"])
+    count = 1 
+    for note in notes:
+        if not note.folder:
+            note.count_id = count
+            count += 1
+    
+    return notes
 
-    print_notes(config["notes_location"])
+
+def list_notes(note_list: list, config: dict, full_path: bool = False, list_contents: bool = False):
+    note_indx = 0
+    note_indent = 0
+    ident_str = f"{colorText.color(Color.GREY)}--{colorText.reset()}"
+    
+    for note in note_list:
+        note_name = os.path.basename(note.path)
+        note_indent = note.indent
+
+        if full_path:
+            print(" " +
+                    f"{colorText.color()}{remove_suffix(note.min_path)}{colorText.reset()}", end = "")
+        else:
+            print(" " + f"{ident_str}" * note_indent +
+                    f"{colorText.color()}{remove_suffix(note_name)}{colorText.reset()}", end = "")
+
+        if not note.folder:
+            print(f"{colorText.color(Color.GREY, style = Style.ITALIC)}({note.count_id}){colorText.reset()}")
+        else:
+            print(f"*{colorText.reset()}")
 
 
 def parse_args() -> dict:
@@ -151,7 +217,7 @@ def main():
     elif arguments.delete:
         delete_note(arguments, config)
     elif arguments.list:
-        list_notes(config)
+        list_notes(get_note_list(config), config)
 
 
 if __name__ == "__main__":
