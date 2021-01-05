@@ -1,10 +1,12 @@
 #!/usr/bin/python3
 import os
 import sys
+import mdv
 
-from lib.misc import Note 
+from lib.definitions import Note
 
-class MarkdownParse():
+
+class MarkdownParse:
     name = ""
     _notePath = ""
 
@@ -13,6 +15,16 @@ class MarkdownParse():
         if not os.path.exists(note.path):
             print(f"{note.name} does not exist")
             sys.exit(1)
-    
+        self._configure_mdv()
+
+    def _configure_mdv(self):
+        mdv.term_columns = 60
+
+    def _read_raw_markdown(self):
+        markdown = None
+        with open(self._note.path, "r") as mk:
+            markdown = mk.read()
+        return markdown
+
     def print(self):
-        print(self._note)
+        print(mdv.main(self._read_raw_markdown()))
