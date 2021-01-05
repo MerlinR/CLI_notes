@@ -1,9 +1,10 @@
 #!/usr/bin/python3
 import os
 import sys
-import mdv
 
+import mdv
 from lib.definitions import Note
+from lib.misc import Color, Style, fontColor, fontReset
 
 
 class MarkdownParse:
@@ -27,4 +28,5 @@ class MarkdownParse:
         return markdown
 
     def print(self):
+        print(f"{fontColor(style = Style.ITALIC)}{self._note.min_path}{fontReset()}")
         print(mdv.main(self._read_raw_markdown()))

@@ -6,10 +6,10 @@ from pathlib import Path
 from subprocess import call
 from typing import Optional
 
-from lib.misc import colorText, Color, Style
 from lib.definitions import Note
-from lib.settings import config, CONFIG_FILE_NAME
+from lib.misc import Color, Style, fontColor, fontReset
 from lib.parseMarkdown import MarkdownParse
+from lib.settings import CONFIG_FILE_NAME, config
 
 
 def remove_suffix(string: str) -> str:
@@ -89,7 +89,7 @@ def view_note(view_note: dict, config: dict):
     relevent_notes = search_note_by_name(view_note.view, config)
     found_note = None
     if not relevent_notes:
-        print(f"No matching notes for {search_note.search}")
+        print(f"No matching notes for {view_note.view}")
     elif len(relevent_notes) == 1:
         found_note = relevent_notes[0]
     else:
@@ -109,8 +109,8 @@ def view_note(view_note: dict, config: dict):
                 if note.name == choice:
                     found_note = note
                     break
-
-    MarkdownParse(found_note).print()
+    if found_note:
+        MarkdownParse(found_note).print()
 
 
 def search_note_by_name(name, config: dict):
@@ -127,7 +127,7 @@ def list_notes(
 ):
     note_indx = 0
     note_indent = 0
-    ident_str = f"{colorText.color(Color.GREY)}--{colorText.reset()}"
+    ident_str = f"{fontColor(Color.GREY)}--{fontReset()}"
 
     for note in note_list:
         note_name = os.path.basename(note.path)
@@ -135,24 +135,23 @@ def list_notes(
 
         if full_path:
             print(
-                " "
-                + f"{colorText.color()}{remove_suffix(note.min_path)}{colorText.reset()}",
+                " " + f"{fontColor()}{remove_suffix(note.min_path)}{fontReset()}",
                 end="",
             )
         else:
             print(
                 " "
                 + f"{ident_str}" * note_indent
-                + f"{colorText.color()}{remove_suffix(note_name)}{colorText.reset()}",
+                + f"{fontColor()}{remove_suffix(note_name)}{fontReset()}",
                 end="",
             )
 
         if not note.folder:
             print(
-                f"{colorText.color(Color.GREY, style = Style.ITALIC)}({note.count_id}){colorText.reset()}"
+                f"{fontColor(Color.GREY, style = Style.ITALIC)}({note.count_id}){fontReset()}"
             )
         else:
-            print(f"*{colorText.reset()}")
+            print(f"*{fontReset()}")
 
 
 def alter_note(alter_note: dict, config: dict):
@@ -172,6 +171,7 @@ def alter_note(alter_note: dict, config: dict):
             note.write("#{}\n".format(title))
 
     call([config["editor"], note_path])
+
 
 def configre_notes(arguments: dict, config: dict):
     call([config["editor"], CONFIG_FILE_NAME])
@@ -225,7 +225,11 @@ def parse_args() -> dict:
         "-s", "--search", dest="search", type=str, help="Search for note by title"
     )
     arguments.add_argument(
-        "-c", "--configure", dest="configure", action="store_true", help="Change the configurations"
+        "-c",
+        "--configure",
+        dest="configure",
+        action="store_true",
+        help="Change the configurations",
     )
 
     args = arguments.parse_args()

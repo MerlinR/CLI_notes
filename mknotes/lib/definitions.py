@@ -1,10 +1,11 @@
 #!/usr/bin/python3
 
-from dataclasses import dataclass
-import os
 import hashlib
+import os
+from dataclasses import dataclass
 
 from lib.settings import config
+
 
 @dataclass
 class Note:

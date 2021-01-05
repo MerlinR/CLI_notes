@@ -2,6 +2,7 @@
 
 from enum import Enum
 
+
 class Color(Enum):
     GREY = 0
     RED = 1
@@ -23,17 +24,17 @@ class Style(Enum):
     RAPIDBLINK = 6
 
 
-class colorText:
-    def color(
-        setcolor: Color = Color.WHITE, bright: bool = False, style: Style = Style.ENDC
-    ):
-        colorCode = setcolor.value
+def fontColor(
+    setcolor: Color = Color.WHITE, bright: bool = False, style: Style = Style.ENDC
+):
+    colorCode = setcolor.value
 
-        if bright:
-            colorCode = colorCode + 90
-        else:
-            colorCode = colorCode + 30
-        return f"\033[{style.value};{colorCode}m"
+    if bright:
+        colorCode = colorCode + 90
+    else:
+        colorCode = colorCode + 30
+    return f"\033[{style.value};{colorCode}m"
 
-    def reset():
-        return f"\033[0m"
+
+def fontReset():
+    return f"\033[0m"
