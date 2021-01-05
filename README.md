@@ -2,7 +2,7 @@
 Simple cli note tool and orgniser. Using Markdown for human readable and easily createable note files.
 
 ## Usage
-mknotes <name>                      Outputs the notes
+mknotes NOTE_name                      Outputs the notes
 
 ### Options
     -a | --alter        <name>  Add/Alter a new note
@@ -27,6 +27,8 @@ mknotes <name>                      Outputs the notes
     outputs if single match
 
 ### Wishlist
+ - Search for project, lists notes in folder
+ - multiple note Dir's for code README's
  - notes links to other notes, local or seperaterd
  - Dynamic notes (runs commands to import into note, E.G "ls", "ip a", etc
  - Interactive mode
