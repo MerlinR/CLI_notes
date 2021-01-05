@@ -2,6 +2,7 @@
 import argparse
 import os
 import sys
+import re
 from pathlib import Path
 from subprocess import call
 from typing import Optional
@@ -60,10 +61,10 @@ def get_note_list(config: dict):
                 item, config["extension"]
             ) in os.listdir(cur_path):
                 # Note with subfolder
-                dir_list.append(Note(os.path.join(cur_path, item), indent))
+                dir_list.append(Note(os.path.join(cur_path, f"{item}.{config['extension']}"), indent))
             elif os.path.isdir(os.path.join(cur_path, item)):
                 # Subfolder only
-                dir_list.append(Note(os.path.join(cur_path, item), indent, folder=True))
+                dir_list.append(Note(os.path.join(cur_path, item), indent, directory=True))
             else:
                 # Note Only
                 dir_list.append(Note(os.path.join(cur_path, item), indent))
@@ -78,7 +79,7 @@ def get_note_list(config: dict):
     notes = search_all_notes(config["notes_location"])
     count = 1
     for note in notes:
-        if not note.folder:
+        if not note.directory:
             note.count_id = count
             count += 1
 
@@ -146,12 +147,15 @@ def list_notes(
                 end="",
             )
 
-        if not note.folder:
+        if not note.directory:
             print(
                 f"{fontColor(Color.GREY, style = Style.ITALIC)}({note.count_id}){fontReset()}"
             )
         else:
             print(f"*{fontReset()}")
+        if note.extra_info:
+            print("  " * (note_indent+1) +
+                    f"{fontColor(setcolor = Color.RED)}{note.extra_info}{fontReset()}")
 
 
 def alter_note(alter_note: dict, config: dict):
@@ -203,6 +207,24 @@ def search_note(search_note: dict, config: dict):
     list_notes(relevent_notes, config, full_path=True)
 
 
+def search_within_note(search_note: dict, config: dict):
+    notes = get_note_list(config) 
+    regObj = re.compile(f".*{search_note.dsearch}.*")
+    relevent_notes = []
+    
+    for note in notes:
+        if note.directory:
+            continue
+        with open(note.path) as f:
+            for line in f:
+                if regObj.match(line):
+                    note.extra_info = line
+                    relevent_notes.append(note)
+                    break
+    
+    list_notes(relevent_notes, config, full_path=True)
+
+
 def parse_args() -> dict:
     arguments = argparse.ArgumentParser(
         description="mknotes. Simple cli tool for creating and managing markdown notes."
@@ -216,13 +238,16 @@ def parse_args() -> dict:
         "-a", "--alter", dest="alter", type=str, help="Add/Edit note"
     )
     arguments.add_argument(
-        "-d", "--delete", dest="delete", type=str, help="Delete note"
-    )
-    arguments.add_argument(
         "-l", "--list", dest="list", action="store_true", help="list notes"
     )
     arguments.add_argument(
+        "-d", "--delete", dest="delete", type=str, help="Delete note"
+    )
+    arguments.add_argument(
         "-s", "--search", dest="search", type=str, help="Search for note by title"
+    )
+    arguments.add_argument(
+        "-ds", "--deep-search", dest="dsearch", type=str, help="Search for note by content"
     )
     arguments.add_argument(
         "-c",
@@ -245,14 +270,16 @@ def main():
 
     if arguments.view:
         view_note(arguments, config)
-    elif arguments.search:
-        search_note(arguments, config)
     elif arguments.alter:
         alter_note(arguments, config)
     elif arguments.delete:
         delete_note(arguments, config)
     elif arguments.list:
         list_notes(get_note_list(config), config)
+    elif arguments.search:
+        search_note(arguments, config)
+    elif arguments.dsearch:
+        search_within_note(arguments, config)
     elif arguments.configure:
         configre_notes(arguments, config)
 

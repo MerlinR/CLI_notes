@@ -11,9 +11,10 @@ from lib.settings import config
 class Note:
     path: str
     indent: int
-    folder: bool = False
+    directory: bool = False
     name: str = ""
     min_path: str = ""
+    extra_info = ""
     count_id: int = -1
     id: str = None
 
