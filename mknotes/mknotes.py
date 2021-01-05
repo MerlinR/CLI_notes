@@ -11,25 +11,6 @@ from lib.settings import config
 from lib.parseMarkdown import MarkdownParse
 
 
-def alter_note(alter_note: dict, config: dict):
-    title = alter_note.alter.split(".")[-1]
-
-    note_path = os.path.join(
-        config["notes_location"],
-        *alter_note.alter.split(".")[:-1],
-        (title + "." + config["extension"]),
-    )
-
-    if os.path.exists(os.path.dirname(note_path)) is False:
-        makedirs(os.path.dirname(note_path))
-
-    if os.path.isfile(note_path) is False:
-        with open(note_path, "w") as note:
-            note.write("#{}\n".format(title))
-
-    call([config["editor"], note_path])
-
-
 def remove_suffix(string: str) -> str:
     return os.path.splitext(string)[0]
 
@@ -51,6 +32,7 @@ def note_selection(msg: str, options: list) -> bool:
                 
     return option
 
+
 def confirm_choice(msg: Optional[str] = False) -> bool:
     if msg:
         print(msg)
@@ -63,56 +45,6 @@ def confirm_choice(msg: Optional[str] = False) -> bool:
 
     return True if (confirm == "c") else False
 
-
-def delete_note(rm_note: dict, config: dict):
-    title = rm_note.delete.split(".")[-1]
-
-    note_path = os.path.join(
-        config["notes_location"],
-        *rm_note.delete.split(".")[:-1],
-        (title + "." + config["extension"]),
-    )
-
-    if os.path.exists(note_path) is False:
-        print(f"No note: {rm_note.delete}")
-    elif confirm_choice("Do you wish to delete {}".format(rm_note.delete)):
-        try:
-            os.remove(note_path)
-            if not os.os.listdir(os.path.dirname(note_path)):
-                os.rmdir(os.path.dirname(note_path))
-            print(f"Deleted {rm_note.delete}")
-        except:
-            print("Could not delete")
-
-
-def search_note_by_name(search_note: dict, config: dict):
-    notes = get_note_list(config)
-    relevent_notes = []
-    for note in notes:
-        if search_note.search in str(note.min_path):
-            relevent_notes.append(note)
-    
-    if not relevent_notes:
-        print(f"No matching notes for {search_note.search}")
-    elif len(relevent_notes) == 1:
-        print(note)
-    else:
-        list_notes(relevent_notes, config, full_path = True) 
-        options = []
-        for note in relevent_notes:
-            options.append(note.count_id)
-            options.append(note.name)
-        choice = note_selection(f"Please select a note: {options}", options)
-
-        for note in relevent_notes:
-            if isinstance(choice, int):
-                if note.count_id == choice:
-                    print(note)
-                    break
-            else:
-                if note.name == choice:
-                    print(note)
-                    break
 
 
 def get_note_list(config: dict):
@@ -151,6 +83,43 @@ def get_note_list(config: dict):
     return notes
 
 
+def view_note(view_note: dict, config: dict):
+    relevent_notes = search_note_by_name(view_note.view, config)
+    found_note = None
+    if not relevent_notes:
+        print(f"No matching notes for {search_note.search}")
+    elif len(relevent_notes) == 1:
+        found_note = relevent_notes[0]
+    else:
+        list_notes(relevent_notes, config, full_path = True) 
+        options = []
+        for note in relevent_notes:
+            options.append(note.count_id)
+            options.append(note.name)
+        choice = note_selection(f"Please select a note: {options}", options)
+
+        for note in relevent_notes:
+            if isinstance(choice, int):
+                if note.count_id == choice:
+                    found_note = note
+                    break
+            else:
+                if note.name == choice:
+                    found_note = note
+                    break
+
+    MarkdownParse(found_note).print()
+
+
+def search_note_by_name(name, config: dict):
+    notes = get_note_list(config)
+    relevent_notes = []
+    for note in notes:
+        if name in str(note.min_path):
+            relevent_notes.append(note)
+    return relevent_notes 
+
+
 def list_notes(note_list: list, config: dict, full_path: bool = False, list_contents: bool = False):
     note_indx = 0
     note_indent = 0
@@ -171,6 +140,51 @@ def list_notes(note_list: list, config: dict, full_path: bool = False, list_cont
             print(f"{colorText.color(Color.GREY, style = Style.ITALIC)}({note.count_id}){colorText.reset()}")
         else:
             print(f"*{colorText.reset()}")
+
+
+def alter_note(alter_note: dict, config: dict):
+    title = alter_note.alter.split(".")[-1]
+
+    note_path = os.path.join(
+        config["notes_location"],
+        *alter_note.alter.split(".")[:-1],
+        (title + "." + config["extension"]),
+    )
+
+    if os.path.exists(os.path.dirname(note_path)) is False:
+        makedirs(os.path.dirname(note_path))
+
+    if os.path.isfile(note_path) is False:
+        with open(note_path, "w") as note:
+            note.write("#{}\n".format(title))
+
+    call([config["editor"], note_path])
+
+
+def delete_note(rm_note: dict, config: dict):
+    title = rm_note.delete.split(".")[-1]
+
+    note_path = os.path.join(
+        config["notes_location"],
+        *rm_note.delete.split(".")[:-1],
+        (title + "." + config["extension"]),
+    )
+
+    if os.path.exists(note_path) is False:
+        print(f"No note: {rm_note.delete}")
+    elif confirm_choice("Do you wish to delete {}".format(rm_note.delete)):
+        try:
+            os.remove(note_path)
+            if not os.os.listdir(os.path.dirname(note_path)):
+                os.rmdir(os.path.dirname(note_path))
+            print(f"Deleted {rm_note.delete}")
+        except:
+            print("Could not delete")
+
+
+def search_note(search_note: dict, config: dict):
+    relevent_notes = search_note_by_name(search_note.search, config)
+    list_notes(relevent_notes, config, full_path = True)
 
 
 def parse_args() -> dict:
@@ -198,8 +212,7 @@ def parse_args() -> dict:
     args = arguments.parse_args()
 
     if len(sys.argv) < 2:
-        arguments.print_usage()
-        sys.exit(1)
+        args.list = True
 
     return args
 
@@ -208,10 +221,9 @@ def main():
     arguments = parse_args()
 
     if arguments.view:
-        note = MarkdownParse(arguments.view[0])
-        note.print()
+        view_note(arguments, config)
     elif arguments.search:
-        search_note_by_name(arguments, config)
+        search_note(arguments, config)
     elif arguments.alter:
         alter_note(arguments, config)
     elif arguments.delete:
