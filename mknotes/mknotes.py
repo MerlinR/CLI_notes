@@ -39,14 +39,12 @@ def note_selection(msg: str, options: list) -> bool:
         print(msg)
 
     option = None
-    while True:
+    while option not in options:
         option = input("Note selection or [q]uit: ")
         try:
             option = int(option)
         except:
             pass
-        if option in options:
-            break
         if option == 'q':
             sys.exit(1)
         print(f"\n Invalid Option. {msg}")
@@ -93,6 +91,7 @@ def search_note_by_name(search_note: dict, config: dict):
     for note in notes:
         if search_note.search in str(note.min_path):
             relevent_notes.append(note)
+    
     if not relevent_notes:
         print(f"No matching notes for {search_note.search}")
     elif len(relevent_notes) == 1:
@@ -104,6 +103,7 @@ def search_note_by_name(search_note: dict, config: dict):
             options.append(note.count_id)
             options.append(note.name)
         choice = note_selection(f"Please select a note: {options}", options)
+
         for note in relevent_notes:
             if isinstance(choice, int):
                 if note.count_id == choice:
@@ -131,7 +131,7 @@ def get_note_list(config: dict):
                 dir_list.append(Note(os.path.join(cur_path, item), indent))
             elif os.path.isdir(os.path.join(cur_path, item)):
                 # Subfolder only
-                dir_list.append(Note(os.path.join(cur_path, item), indent, True))
+                dir_list.append(Note(os.path.join(cur_path, item), indent, folder = True))
             else:
                 # Note Only
                 dir_list.append(Note(os.path.join(cur_path, item), indent))
