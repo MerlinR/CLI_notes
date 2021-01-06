@@ -104,7 +104,8 @@ def view_note(view_note: dict, config: dict):
     relevent_notes = search_note_by_name(view_note.view, config)
     found_note = None
     if not relevent_notes:
-        print(f"No matching notes for {view_note.view}")
+        print(f"No matching note titles containing {view_note.view}")
+        deep_search_within_note(view_note.view, config)
     elif len(relevent_notes) == 1:
         found_note = relevent_notes[0]
     else:
@@ -115,14 +116,9 @@ def view_note(view_note: dict, config: dict):
         choice = note_selection(f"Please select a note: {options}", options)
 
         for note in relevent_notes:
-            if isinstance(choice, int):
-                if note.count_id == choice:
-                    found_note = note
-                    break
-            else:
-                if note.name == choice:
-                    found_note = note
-                    break
+            if note.count_id == choice:
+                found_note = note
+    
     if found_note:
         MarkdownParse(found_note).print()
 
@@ -229,9 +225,9 @@ def search_note(search_note: dict, config: dict):
     list_notes(relevent_notes, config, full_path = True, list_contents = True)
 
 
-def deep_search_within_note(search_note: dict, config: dict):
+def deep_search_within_note(search_text: str, config: dict):
     notes = get_note_list(config) 
-    regObj = re.compile(f".*{search_note.dsearch}.*")
+    regObj = re.compile(f".*{search_text}.*")
     relevent_notes = []
 
     for note in notes:
@@ -308,7 +304,7 @@ def main():
     elif arguments.search:
         search_note(arguments, config)
     elif arguments.dsearch:
-        deep_search_within_note(arguments, config)
+        deep_search_within_note(arguments.dsearch, config)
     elif arguments.configure:
         configre_notes(arguments, config)
 
