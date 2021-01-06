@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 import argparse
 import os
-import sys
 import re
+import sys
 from pathlib import Path
 from subprocess import call
 from typing import Optional
@@ -17,7 +17,7 @@ def remove_suffix(string: str) -> str:
     return os.path.splitext(string)[0]
 
 
-def note_selection(msg: str, options: list) -> bool:
+def note_selection(msg: str, options: list) -> int:
     if msg:
         print(msg)
 
@@ -47,21 +47,22 @@ def confirm_choice(msg: Optional[str] = False) -> bool:
 
     return True if (confirm == "c") else False
 
+
 def get_note_contents(path: str) -> str:
     regObj = re.compile(f"^\s*#+.*")
     contents = ""
-    
+
     with open(path) as f:
         for line in f:
             if regObj.match(line):
-                level = line.count('#')
+                level = line.count("#")
                 contents += "  " * level
-                contents += line.replace('#', '').strip() + "\n"
+                contents += line.replace("#", "").strip() + "\n"
 
     return contents
 
 
-def get_note_list(config: dict):
+def get_note_list(config: dict) -> list:
     def search_all_notes(cur_path: str, indent: int = 0, dir_list=[]):
         prev_item = ""
 
@@ -74,10 +75,16 @@ def get_note_list(config: dict):
                 item, config["extension"]
             ) in os.listdir(cur_path):
                 # Note with subfolder
-                dir_list.append(Note(os.path.join(cur_path, f"{item}.{config['extension']}"), indent))
+                dir_list.append(
+                    Note(
+                        os.path.join(cur_path, f"{item}.{config['extension']}"), indent
+                    )
+                )
             elif os.path.isdir(os.path.join(cur_path, item)):
                 # Subfolder only
-                dir_list.append(Note(os.path.join(cur_path, item), indent, directory=True))
+                dir_list.append(
+                    Note(os.path.join(cur_path, item), indent, directory=True)
+                )
             else:
                 # Note Only
                 dir_list.append(Note(os.path.join(cur_path, item), indent))
@@ -118,12 +125,12 @@ def view_note(view_note: dict, config: dict):
         for note in relevent_notes:
             if note.count_id == choice:
                 found_note = note
-    
+
     if found_note:
         MarkdownParse(found_note).print()
 
 
-def search_note_by_name(name, config: dict):
+def search_note_by_name(name, config: dict) -> list:
     notes = get_note_list(config)
     relevent_notes = []
     for note in notes:
@@ -168,12 +175,16 @@ def list_notes(
 
         if list_contents and not note.directory:
             for line in note.contents.splitlines():
-                print("  " * (note_indent+1) +
-                        f"{fontColor(setcolor = Color.YELLOW)}{line}{fontReset()}")
+                print(
+                    "  " * (note_indent + 1)
+                    + f"{fontColor(setcolor = Color.YELLOW)}{line}{fontReset()}"
+                )
         if note.extra_info:
             for line in note.extra_info.splitlines():
-                print("  " * (note_indent+1) +
-                        f"{fontColor(setcolor = Color.RED)}{line}{fontReset()}")
+                print(
+                    "  " * (note_indent + 1)
+                    + f"{fontColor(setcolor = Color.RED)}{line}{fontReset()}"
+                )
 
 
 def alter_note(alter_note: dict, config: dict):
@@ -222,11 +233,11 @@ def delete_note(rm_note: dict, config: dict):
 
 def search_note(search_note: dict, config: dict):
     relevent_notes = search_note_by_name(search_note.search, config)
-    list_notes(relevent_notes, config, full_path = True, list_contents = True)
+    list_notes(relevent_notes, config, full_path=True, list_contents=True)
 
 
 def deep_search_within_note(search_text: str, config: dict):
-    notes = get_note_list(config) 
+    notes = get_note_list(config)
     regObj = re.compile(f".*{search_text}.*")
     relevent_notes = []
 
@@ -241,7 +252,7 @@ def deep_search_within_note(search_text: str, config: dict):
                     found_match = True
         if found_match:
             relevent_notes.append(note)
-    
+
     list_notes(relevent_notes, config, full_path=True)
 
 
@@ -261,7 +272,11 @@ def parse_args() -> dict:
         "-l", "--list", dest="list", action="store_true", help="list notes"
     )
     arguments.add_argument(
-        "-ll", "--sub-list", dest="sublist", action="store_true", help="list notes and titles"
+        "-ll",
+        "--sub-list",
+        dest="sublist",
+        action="store_true",
+        help="list notes and titles",
     )
     arguments.add_argument(
         "-d", "--delete", dest="delete", type=str, help="Delete note"
@@ -270,7 +285,11 @@ def parse_args() -> dict:
         "-s", "--search", dest="search", type=str, help="Search for note by title"
     )
     arguments.add_argument(
-        "-ds", "--deep-search", dest="dsearch", type=str, help="Search for note by content"
+        "-ds",
+        "--deep-search",
+        dest="dsearch",
+        type=str,
+        help="Search for note by content",
     )
     arguments.add_argument(
         "-c",
@@ -300,7 +319,7 @@ def main():
     elif arguments.list:
         list_notes(get_note_list(config), config)
     elif arguments.sublist:
-        list_notes(get_note_list(config), config, list_contents = True)
+        list_notes(get_note_list(config), config, list_contents=True)
     elif arguments.search:
         search_note(arguments, config)
     elif arguments.dsearch:
