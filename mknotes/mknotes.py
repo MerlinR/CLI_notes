@@ -98,7 +98,6 @@ def view_note(view_note: dict, config: dict):
         options = []
         for note in relevent_notes:
             options.append(note.count_id)
-            options.append(note.name)
         choice = note_selection(f"Please select a note: {options}", options)
 
         for note in relevent_notes:
@@ -120,6 +119,9 @@ def search_note_by_name(name, config: dict):
     for note in notes:
         if name in str(note.min_path):
             relevent_notes.append(note)
+        if name.isdigit() and int(name) == note.count_id:
+            relevent_notes.append(note)
+
     return relevent_notes
 
 
@@ -154,8 +156,9 @@ def list_notes(
         else:
             print(f"*{fontReset()}")
         if note.extra_info:
-            print("  " * (note_indent+1) +
-                    f"{fontColor(setcolor = Color.RED)}{note.extra_info}{fontReset()}")
+            for line in note.extra_info.splitlines():
+                print("  " * (note_indent+1) +
+                        f"{fontColor(setcolor = Color.RED)}{line}{fontReset()}")
 
 
 def alter_note(alter_note: dict, config: dict):
@@ -207,20 +210,22 @@ def search_note(search_note: dict, config: dict):
     list_notes(relevent_notes, config, full_path=True)
 
 
-def search_within_note(search_note: dict, config: dict):
+def deep_search_within_note(search_note: dict, config: dict):
     notes = get_note_list(config) 
     regObj = re.compile(f".*{search_note.dsearch}.*")
     relevent_notes = []
-    
+
     for note in notes:
         if note.directory:
             continue
+        found_match = False
         with open(note.path) as f:
-            for line in f:
+            for indx, line in enumerate(f):
                 if regObj.match(line):
-                    note.extra_info = line
-                    relevent_notes.append(note)
-                    break
+                    note.extra_info = note.extra_info + f"{indx+1}: {line}"
+                    found_match = True
+        if found_match:
+            relevent_notes.append(note)
     
     list_notes(relevent_notes, config, full_path=True)
 
@@ -279,7 +284,7 @@ def main():
     elif arguments.search:
         search_note(arguments, config)
     elif arguments.dsearch:
-        search_within_note(arguments, config)
+        deep_search_within_note(arguments, config)
     elif arguments.configure:
         configre_notes(arguments, config)
 

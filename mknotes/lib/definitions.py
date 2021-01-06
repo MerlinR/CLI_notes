@@ -14,7 +14,7 @@ class Note:
     directory: bool = False
     name: str = ""
     min_path: str = ""
-    extra_info = ""
+    extra_info: str = ""
     count_id: int = -1
     id: str = None
 
