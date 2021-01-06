@@ -47,6 +47,19 @@ def confirm_choice(msg: Optional[str] = False) -> bool:
 
     return True if (confirm == "c") else False
 
+def get_note_contents(path: str) -> str:
+    regObj = re.compile(f"^\s*#+.*")
+    contents = ""
+    
+    with open(path) as f:
+        for line in f:
+            if regObj.match(line):
+                level = line.count('#')
+                contents += "  " * level
+                contents += line.replace('#', '').strip() + "\n"
+
+    return contents
+
 
 def get_note_list(config: dict):
     def search_all_notes(cur_path: str, indent: int = 0, dir_list=[]):
@@ -81,6 +94,7 @@ def get_note_list(config: dict):
     for note in notes:
         if not note.directory:
             note.count_id = count
+            note.contents = get_note_contents(note.path)
             count += 1
 
     return notes
@@ -155,6 +169,11 @@ def list_notes(
             )
         else:
             print(f"*{fontReset()}")
+
+        if list_contents and not note.directory:
+            for line in note.contents.splitlines():
+                print("  " * (note_indent+1) +
+                        f"{fontColor(setcolor = Color.YELLOW)}{line}{fontReset()}")
         if note.extra_info:
             for line in note.extra_info.splitlines():
                 print("  " * (note_indent+1) +
@@ -207,7 +226,7 @@ def delete_note(rm_note: dict, config: dict):
 
 def search_note(search_note: dict, config: dict):
     relevent_notes = search_note_by_name(search_note.search, config)
-    list_notes(relevent_notes, config, full_path=True)
+    list_notes(relevent_notes, config, full_path = True, list_contents = True)
 
 
 def deep_search_within_note(search_note: dict, config: dict):
@@ -246,6 +265,9 @@ def parse_args() -> dict:
         "-l", "--list", dest="list", action="store_true", help="list notes"
     )
     arguments.add_argument(
+        "-ll", "--sub-list", dest="sublist", action="store_true", help="list notes and titles"
+    )
+    arguments.add_argument(
         "-d", "--delete", dest="delete", type=str, help="Delete note"
     )
     arguments.add_argument(
@@ -281,6 +303,8 @@ def main():
         delete_note(arguments, config)
     elif arguments.list:
         list_notes(get_note_list(config), config)
+    elif arguments.sublist:
+        list_notes(get_note_list(config), config, list_contents = True)
     elif arguments.search:
         search_note(arguments, config)
     elif arguments.dsearch:
