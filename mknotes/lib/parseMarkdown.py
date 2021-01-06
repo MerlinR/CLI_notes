@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import os
+import pydoc
 import sys
 
 import mdv
@@ -28,5 +29,10 @@ class MarkdownParse:
         return markdown
 
     def print(self):
+        rows, columns = os.popen("stty size", "r").read().split()
         print(f"{fontColor(style = Style.ITALIC)}{self._note.min_path}{fontReset()}")
-        print(mdv.main(self._read_raw_markdown()))
+        raw_markdown = self._read_raw_markdown()
+        if len(raw_markdown) > int(rows):
+            pydoc.pipepager(mdv.main(raw_markdown), cmd="less -R")
+        else:
+            print(mdv.main(raw_markdown))
