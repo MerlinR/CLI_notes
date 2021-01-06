@@ -84,8 +84,9 @@ def _getConfig() -> dict:
         if not path.exists(path.dirname(config_file)):
             makedirs(path.dirname(config_file))
 
-    if path.exists(settings["notes_location"]) is False:
-        makedirs(settings["notes_location"])
+    for note_path in settings["notes_location"].split(','):
+        if path.exists(note_path) is False:
+            makedirs(note_path)
 
     if path.exists(settings["editor"]) is False:
         settings["editor"] = _validate_editor(settings["editor"])
@@ -94,6 +95,7 @@ def _getConfig() -> dict:
     settings["extension"] = _validate_extension(settings["extension"])
 
     _write_config_file(config_file, settings)
+    settings["note_paths"] = settings["notes_location"].split(",")
     return settings
 
 

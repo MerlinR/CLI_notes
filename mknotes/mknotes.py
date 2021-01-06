@@ -67,10 +67,8 @@ def get_note_list(config: dict) -> list:
         prev_item = ""
 
         for indx, item in enumerate(sorted(os.listdir(cur_path))):
-
             if "{}.{}".format(prev_item, config["extension"]) == item:
                 continue
-
             if os.path.isdir(os.path.join(cur_path, item)) and "{}.{}".format(
                 item, config["extension"]
             ) in os.listdir(cur_path):
@@ -80,12 +78,7 @@ def get_note_list(config: dict) -> list:
                         os.path.join(cur_path, f"{item}.{config['extension']}"), indent
                     )
                 )
-            elif os.path.isdir(os.path.join(cur_path, item)):
-                # Subfolder only
-                dir_list.append(
-                    Note(os.path.join(cur_path, item), indent, directory=True)
-                )
-            else:
+            elif  item.endswith(config["extension"]):
                 # Note Only
                 dir_list.append(Note(os.path.join(cur_path, item), indent))
 
@@ -95,15 +88,19 @@ def get_note_list(config: dict) -> list:
                 )
             prev_item = item
         return dir_list
-
-    notes = search_all_notes(config["notes_location"])
+    
+    notes = []
+    for note_path in config["note_paths"]:
+        notes.extend(search_all_notes(note_path, dir_list=[]))
+    #result = list(Path(config["note_paths"][0]).rglob(f"*.{config['extension']}"))
+    #for found in sorted(result):
+    #    notes.append(Note(str(found)))
+    
     count = 1
     for note in notes:
-        if not note.directory:
-            note.count_id = count
-            note.contents = get_note_contents(note.path)
-            count += 1
-
+        note.count_id = count
+        note.contents = get_note_contents(note.path)
+        count += 1
     return notes
 
 
@@ -116,7 +113,7 @@ def view_note(view_note: dict, config: dict):
     elif len(relevent_notes) == 1:
         found_note = relevent_notes[0]
     else:
-        list_notes(relevent_notes, config, full_path=True)
+        list_notes(relevent_notes, config)
         options = []
         for note in relevent_notes:
             options.append(note.count_id)
@@ -143,37 +140,26 @@ def search_note_by_name(name, config: dict) -> list:
 
 
 def list_notes(
-    note_list: list, config: dict, full_path: bool = False, list_contents: bool = False
+    note_list: list, config: dict, list_contents: bool = False
 ):
     note_indx = 0
     note_indent = 0
-    ident_str = f"{fontColor(Color.GREY)}--{fontReset()}"
+    ident_str = f"{fontColor(Color.GREY)} - {fontReset()}"
 
     for note in note_list:
         note_name = os.path.basename(note.path)
         note_indent = note.indent
 
-        if full_path:
-            print(
-                " " + f"{fontColor()}{remove_suffix(note.min_path)}{fontReset()}",
-                end="",
-            )
-        else:
-            print(
-                " "
-                + f"{ident_str}" * note_indent
-                + f"{fontColor()}{remove_suffix(note_name)}{fontReset()}",
-                end="",
-            )
+        print(
+            " " + f"{ident_str}{fontColor()}{remove_suffix(note.min_path)}{fontReset()}",
+            end="",
+        )
 
-        if not note.directory:
-            print(
-                f"{fontColor(Color.GREY, style = Style.ITALIC)}({note.count_id}){fontReset()}"
-            )
-        else:
-            print(f"*{fontReset()}")
+        print(
+            f"{fontColor(Color.GREY, style = Style.ITALIC)}({note.count_id}){fontReset()}"
+        )
 
-        if list_contents and not note.directory:
+        if list_contents:
             for line in note.contents.splitlines():
                 print(
                     "  " * (note_indent + 1)
@@ -233,7 +219,7 @@ def delete_note(rm_note: dict, config: dict):
 
 def search_note(search_note: dict, config: dict):
     relevent_notes = search_note_by_name(search_note.search, config)
-    list_notes(relevent_notes, config, full_path=True, list_contents=True)
+    list_notes(relevent_notes, config, list_contents=True)
 
 
 def deep_search_within_note(search_text: str, config: dict):
@@ -242,8 +228,6 @@ def deep_search_within_note(search_text: str, config: dict):
     relevent_notes = []
 
     for note in notes:
-        if note.directory:
-            continue
         found_match = False
         with open(note.path) as f:
             for indx, line in enumerate(f):
@@ -253,7 +237,7 @@ def deep_search_within_note(search_text: str, config: dict):
         if found_match:
             relevent_notes.append(note)
 
-    list_notes(relevent_notes, config, full_path=True)
+    list_notes(relevent_notes, config)
 
 
 def parse_args() -> dict:

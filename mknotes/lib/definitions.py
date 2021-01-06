@@ -10,8 +10,7 @@ from lib.settings import config
 @dataclass
 class Note:
     path: str
-    indent: int
-    directory: bool = False
+    indent: int = 0
     name: str = ""
     min_path: str = ""
     contents: str = ""
@@ -21,7 +20,9 @@ class Note:
 
     def __post_init__(self):
         self.id = hashlib.sha1(self.path.encode("utf-8")).hexdigest()[:6]
-        self.min_path = (os.path.relpath(self.path, config["notes_location"])).replace(
-            "/", "."
-        )
+        for path in config["note_paths"]:
+            if path in self.path:
+                self.min_path = (os.path.relpath(self.path, path)).replace(
+                    "/", "."
+                )
         self.name = os.path.splitext(os.path.basename(self.path))[0]
