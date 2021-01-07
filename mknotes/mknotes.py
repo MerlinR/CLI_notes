@@ -30,7 +30,8 @@ def note_selection(msg: str, options: list) -> int:
             pass
         if option == "q":
             sys.exit(1)
-        print(f"\n Invalid Option. {msg}")
+        if option not in options:
+            print(f"\n Invalid Option. {msg}")
 
     return option
 
@@ -114,14 +115,10 @@ def view_note(view_note: dict, config: dict):
         found_note = relevent_notes[0]
     else:
         list_notes(relevent_notes, config)
-        options = []
-        for note in relevent_notes:
-            options.append(note.count_id)
+        options = [ note.count_id for note in relevent_notes ]
         choice = note_selection(f"Please select a note: {options}", options)
 
-        for note in relevent_notes:
-            if note.count_id == choice:
-                found_note = note
+        found_note = [ note for note in relevent_notes if note.count_id == choice][0]
 
     if found_note:
         MarkdownParse(found_note).print()
@@ -198,13 +195,11 @@ def configre_notes(arguments: dict, config: dict):
 
 def delete_note(rm_note: dict, config: dict):
     relevent_notes = search_note_by_name(rm_note.delete, config)
-    options = [] 
     choice = False
 
     if len(relevent_notes) > 1:
         list_notes(relevent_notes, config)
-        for note in relevent_notes:
-            options.append(note.count_id)
+        options = [ note.count_id for note in relevent_notes ]
         choice = note_selection(f"Please select a note: {options}", options)
     elif confirm_choice("Do you wish to delete {}".format(relevent_notes[0].min_path)):
         choice = relevent_notes[0].count_id
