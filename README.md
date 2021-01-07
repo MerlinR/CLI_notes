@@ -1,5 +1,5 @@
 # CLI Notes
-Simple cli note tool and orgniser. Using Markdown for human readable and easily createable note files.
+Simple cli note tool and organiser. Using Markdown for human readable and easily creatable note files.
 
 ## Usage
 mknotes NOTE_name                      Outputs the notes
@@ -22,14 +22,14 @@ mknotes NOTE_name                      Outputs the notes
  - Add, Edit, Delete Notes
  - Notes are plaintext markdown with extending subfolders
  - List notes, all or from subfolder
- - exteneded notes list, list notes and their contents, all or from subfolders
+ - extended notes list, list notes and their contents, all or from subfolders
  - Search notes, regex either by note name or it's contents, list all matches
     outputs if single match
 
 ### Wishlist
- - Search for project, lists notes in folder
- - multiple note Dir's for code README's
- - notes links to other notes, local or seperaterd
+ - Markdown color customisation (Should be easy with MDV)
+ - Delete by folder
+ - notes links to other notes, local or separated
  - Dynamic notes (runs commands to import into note, E.G "ls", "ip a", etc
  - Interactive mode
     ''-i | --interactive          Interactive mode, uses Less to display rather then dump''
