@@ -79,7 +79,7 @@ def get_note_list(config: dict) -> list:
                         os.path.join(cur_path, f"{item}.{config['extension']}"), indent
                     )
                 )
-            elif  item.endswith(config["extension"]):
+            elif item.endswith(config["extension"]):
                 # Note Only
                 dir_list.append(Note(os.path.join(cur_path, item), indent))
 
@@ -89,14 +89,14 @@ def get_note_list(config: dict) -> list:
                 )
             prev_item = item
         return dir_list
-    
+
     notes = []
     for note_path in config["note_paths"]:
         notes.extend(search_all_notes(note_path, dir_list=[]))
-    #result = list(Path(config["note_paths"][0]).rglob(f"*.{config['extension']}"))
-    #for found in sorted(result):
+    # result = list(Path(config["note_paths"][0]).rglob(f"*.{config['extension']}"))
+    # for found in sorted(result):
     #    notes.append(Note(str(found)))
-    
+
     count = 1
     for note in notes:
         note.count_id = count
@@ -115,10 +115,10 @@ def view_note(view_note: dict, config: dict):
         found_note = relevent_notes[0]
     else:
         list_notes(relevent_notes, config)
-        options = [ note.count_id for note in relevent_notes ]
+        options = [note.count_id for note in relevent_notes]
         choice = note_selection(f"Please select a note: {options}", options)
 
-        found_note = [ note for note in relevent_notes if note.count_id == choice][0]
+        found_note = [note for note in relevent_notes if note.count_id == choice][0]
 
     if found_note:
         MarkdownParse(found_note).print()
@@ -136,9 +136,7 @@ def search_note_by_name(name, config: dict) -> list:
     return relevent_notes
 
 
-def list_notes(
-    note_list: list, config: dict, list_contents: bool = False
-):
+def list_notes(note_list: list, config: dict, list_contents: bool = False):
     note_indx = 0
     note_indent = 0
     ident_str = f"{fontColor(Color.GREY)} - {fontReset()}"
@@ -148,7 +146,8 @@ def list_notes(
         note_indent = note.indent
 
         print(
-            " " + f"{ident_str}{fontColor()}{remove_suffix(note.min_path)}{fontReset()}",
+            " "
+            + f"{ident_str}{fontColor()}{remove_suffix(note.min_path)}{fontReset()}",
             end="",
         )
 
@@ -199,7 +198,7 @@ def delete_note(rm_note: dict, config: dict):
 
     if len(relevent_notes) > 1:
         list_notes(relevent_notes, config)
-        options = [ note.count_id for note in relevent_notes ]
+        options = [note.count_id for note in relevent_notes]
         choice = note_selection(f"Please select a note: {options}", options)
     elif confirm_choice("Do you wish to delete {}".format(relevent_notes[0].min_path)):
         choice = relevent_notes[0].count_id
@@ -207,7 +206,7 @@ def delete_note(rm_note: dict, config: dict):
         print(f"Not deleting: {rm_note.delete}")
         return
 
-    note = [ note for note in relevent_notes if note.count_id == choice][0]
+    note = [note for note in relevent_notes if note.count_id == choice][0]
     try:
         os.remove(note_path)
         print(f"Deleted {note.min_path}")

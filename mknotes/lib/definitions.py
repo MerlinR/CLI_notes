@@ -22,7 +22,5 @@ class Note:
         self.id = hashlib.sha1(self.path.encode("utf-8")).hexdigest()[:6]
         for path in config["note_paths"]:
             if path in self.path:
-                self.min_path = (os.path.relpath(self.path, path)).replace(
-                    "/", "."
-                )
+                self.min_path = (os.path.relpath(self.path, path)).replace("/", ".")
         self.name = os.path.splitext(os.path.basename(self.path))[0]
