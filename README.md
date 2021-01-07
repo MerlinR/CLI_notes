@@ -29,6 +29,7 @@ mknotes NOTE_name                      Outputs the notes
 ### Wishlist
  - Markdown color customisation (Should be easy with MDV)
  - Delete by folder
+ - Configure option to allow single config change rather the open file
  - notes links to other notes, local or separated
  - Dynamic notes (runs commands to import into note, E.G "ls", "ip a", etc
  - Flat pack notes? (compress)
