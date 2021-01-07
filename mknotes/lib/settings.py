@@ -13,6 +13,26 @@ DEFAULT_CONFIG = {
     "extension": "md",
 }
 
+MARKDOWN_EXTENSIONS = [
+    "md",
+    "markdown",
+    "mdown",
+    "mkdn",
+    "mkd",
+    "mdwn",
+    "mdtxt",
+    "mdtext",
+]
+VIEW_OPTIONS = [
+    "combo",
+    "dump",
+    "interactive",
+]
+DEFAULT_EDITORS = [
+    "vim",
+    "nano",
+]
+
 
 def _read_config_file(config_file: dict, settings: dict) -> dict:
     config = ConfigParser()
@@ -37,7 +57,7 @@ def _config_error(config: str, message: str):
 
 
 def _validate_editor(tool: str) -> str:
-    default_editors = [tool, "vim", "nano"]
+    default_editors = DEFAULT_EDITORS.insert(0, tool)
 
     for editor in default_editors:
         if which(editor):
@@ -47,28 +67,16 @@ def _validate_editor(tool: str) -> str:
 
 
 def _validate_view(view_mode: str) -> str:
-    options = ["combo", "dump", "interactive"]
-    if view_mode not in options:
+    if view_mode not in VIEW_OPTIONS:
         return options[0]
     else:
         return view_mode
 
 
 def _validate_extension(extension: str) -> str:
-    valid_extensions = [
-        "md",
-        "markdown",
-        "mdown",
-        "mkdn",
-        "mkd",
-        "mdwn",
-        "mdtxt",
-        "mdtext",
-    ]
-
     if extension[:1] == ".":
         extension = extension[1:]
-    if extension.lower() in valid_extensions:
+    if extension.lower() in MARKDOWN_EXTENSIONS:
         return extension
     else:
         return valid_extensions[0]
@@ -84,7 +92,7 @@ def _getConfig() -> dict:
         if not path.exists(path.dirname(config_file)):
             makedirs(path.dirname(config_file))
 
-    for note_path in settings["notes_location"].split(','):
+    for note_path in settings["notes_location"].split(","):
         if path.exists(note_path) is False:
             makedirs(note_path)
 
