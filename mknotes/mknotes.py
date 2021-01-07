@@ -177,7 +177,7 @@ def alter_note(alter_note: dict, config: dict):
     title = alter_note.alter.split(".")[-1]
 
     note_path = os.path.join(
-        config["notes_location"],
+        config["notes_paths"][0],
         *alter_note.alter.split(".")[:-1],
         (title + "." + config["extension"]),
     )
@@ -197,24 +197,27 @@ def configre_notes(arguments: dict, config: dict):
 
 
 def delete_note(rm_note: dict, config: dict):
-    title = rm_note.delete.split(".")[-1]
+    relevent_notes = search_note_by_name(rm_note.delete, config)
+    options = [] 
+    choice = False
 
-    note_path = os.path.join(
-        config["notes_location"],
-        *rm_note.delete.split(".")[:-1],
-        (title + "." + config["extension"]),
-    )
+    if len(relevent_notes) > 1:
+        list_notes(relevent_notes, config)
+        for note in relevent_notes:
+            options.append(note.count_id)
+        choice = note_selection(f"Please select a note: {options}", options)
+    elif confirm_choice("Do you wish to delete {}".format(relevent_notes[0].min_path)):
+        choice = relevent_notes[0].count_id
+    elif not choice:
+        print(f"Not deleting: {rm_note.delete}")
+        return
 
-    if os.path.exists(note_path) is False:
-        print(f"No note: {rm_note.delete}")
-    elif confirm_choice("Do you wish to delete {}".format(rm_note.delete)):
-        try:
-            os.remove(note_path)
-            if not os.os.listdir(os.path.dirname(note_path)):
-                os.rmdir(os.path.dirname(note_path))
-            print(f"Deleted {rm_note.delete}")
-        except:
-            print("Could not delete")
+    note = [ note for note in relevent_notes if note.count_id == choice][0]
+    try:
+        os.remove(note_path)
+        print(f"Deleted {note.min_path}")
+    except:
+        print("Could not delete")
 
 
 def search_note(search_note: dict, config: dict):
