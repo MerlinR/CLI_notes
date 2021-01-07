@@ -31,5 +31,6 @@ mknotes NOTE_name                      Outputs the notes
  - Delete by folder
  - notes links to other notes, local or separated
  - Dynamic notes (runs commands to import into note, E.G "ls", "ip a", etc
+ - Flat pack notes? (compress)
  - Interactive mode
     ''-i | --interactive          Interactive mode, uses Less to display rather then dump''
