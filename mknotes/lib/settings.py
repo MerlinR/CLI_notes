@@ -13,7 +13,7 @@ DEFAULT_CONFIG = {
     "extension": "md",
 }
 
-MARKDOWN_EXTENSIONS = ( 
+MARKDOWN_EXTENSIONS = (
     "md",
     "markdown",
     "mdown",
@@ -22,89 +22,93 @@ MARKDOWN_EXTENSIONS = (
     "mdwn",
     "mdtxt",
     "mdtext",
-    )
+)
 VIEW_OPTIONS = (
     "combo",
     "dump",
     "interactive",
-    )
+)
 DEFAULT_EDITORS = (
     "vim",
     "nano",
-    )
+)
 
 
-def _read_config_file(config_file: dict, settings: dict) -> dict:
-    config = ConfigParser()
-    config.read(config_file)
+class Settings:
+    config_path = str(path.expanduser(CONFIG_FILE_NAME))
+    _config = DEFAULT_CONFIG
+    _extra = {}
 
-    if config.has_section(CONFIG_SECTION):
-        read_settings = dict(config.items(CONFIG_SECTION))
-        settings.update(read_settings)
-    return settings
+    def __init__(self):
+        if path.exists(self.config_path):
+            self._read_config_file()
+        else:
+            if not path.exists(path.dirname(self.config_path)):
+                makedirs(path.dirname(self.config_path))
+
+        # TODO Dont auto create note path? Throw error for missing dir
+        self._extra["note_paths"] = self._config["notes_location"].split(",")
+        for note_path in self._extra["note_paths"]:
+            if path.exists(note_path) is False:
+                makedirs(note_path)
+
+        # TODO Handle commands for editor
+        if path.exists(self._config["editor"]) is False:
+            self._config["editor"] = self._validate_editor(self._config["editor"])
+
+        self._config["view-mode"] = self._validate_view(self._config["view-mode"])
+        self._config["extension"] = self._validate_extension(self._config["extension"])
+
+        self._extra["markdown_extensions"] = MARKDOWN_EXTENSIONS
+        self._write_config_file()
+
+    def _read_config_file(self):
+        config = ConfigParser()
+        config.read(self.config_path)
+
+        if config.has_section(CONFIG_SECTION):
+            read_settings = dict(config.items(CONFIG_SECTION))
+            self._config.update(read_settings)
+
+    def _write_config_file(self):
+        config = ConfigParser()
+        config["settings"] = self._config
+
+        with open(self.config_path, "w") as config_file:
+            config.write(config_file)
+
+    def _config_error(self, message: str):
+        raise ValueError("ERROR: {} configuration: {}".format(self._config, message))
+
+    # TODO Little broken? auto's VIM without saying
+    def _validate_editor(self, tool: str) -> str:
+        default_editors = tuple(tool) + DEFAULT_EDITORS
+
+        for editor in default_editors:
+            if which(editor):
+                return which(editor)
+
+        _config_error("Editor", "Cannot find usable editor {}".format(default_editors))
+
+    def _validate_view(self, view_mode: str) -> str:
+        if view_mode not in VIEW_OPTIONS:
+            return options[0]
+        else:
+            return view_mode
+
+    def _validate_extension(self, extension: str) -> str:
+        if extension[:1] == ".":
+            extension = extension[1:]
+        if extension.lower() in MARKDOWN_EXTENSIONS:
+            return extension
+        else:
+            return valid_extensions[0]
+
+    def get(self, key: str) -> str:
+        if self._config.get(key):
+            return self._config[key]
+        else:
+            return self._extra.get(key)
 
 
-def _write_config_file(config_file: str, config_to_save: dict):
-    config = ConfigParser()
-    config["settings"] = config_to_save
-
-    with open(config_file, "w") as configfile:
-        config.write(configfile)
-
-
-def _config_error(config: str, message: str):
-    raise ValueError("ERROR: {} configuration: {}".format(config, message))
-
-
-def _validate_editor(tool: str) -> str:
-    default_editors = DEFAULT_EDITORS.insert(0, tool)
-
-    for editor in default_editors:
-        if which(editor):
-            return which(editor)
-
-    _config_error("Editor", "Cannot find usable editor {}".format(default_editors))
-
-
-def _validate_view(view_mode: str) -> str:
-    if view_mode not in VIEW_OPTIONS:
-        return options[0]
-    else:
-        return view_mode
-
-
-def _validate_extension(extension: str) -> str:
-    if extension[:1] == ".":
-        extension = extension[1:]
-    if extension.lower() in MARKDOWN_EXTENSIONS:
-        return extension
-    else:
-        return valid_extensions[0]
-
-
-def _getConfig() -> dict:
-    settings = DEFAULT_CONFIG
-    config_file = path.expanduser(CONFIG_FILE_NAME)
-
-    if path.exists(config_file):
-        settings = _read_config_file(config_file, settings)
-    else:
-        if not path.exists(path.dirname(config_file)):
-            makedirs(path.dirname(config_file))
-
-    for note_path in settings["notes_location"].split(","):
-        if path.exists(note_path) is False:
-            makedirs(note_path)
-
-    if path.exists(settings["editor"]) is False:
-        settings["editor"] = _validate_editor(settings["editor"])
-
-    settings["view-mode"] = _validate_view(settings["view-mode"])
-    settings["extension"] = _validate_extension(settings["extension"])
-
-    _write_config_file(config_file, settings)
-    settings["note_paths"] = settings["notes_location"].split(",")
-    return settings
-
-
-config = _getConfig()
+config = Settings()

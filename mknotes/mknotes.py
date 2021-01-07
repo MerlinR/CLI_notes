@@ -10,7 +10,7 @@ from typing import Optional
 from lib.definitions import Note
 from lib.misc import Color, Style, fontColor, fontReset
 from lib.parseMarkdown import MarkdownParse
-from lib.settings import CONFIG_FILE_NAME, MARKDOWN_EXTENSIONS, config
+from lib.settings import config
 
 
 def remove_suffix(string: str) -> str:
@@ -63,23 +63,24 @@ def get_note_contents(path: str) -> str:
     return contents
 
 
-def get_note_list(config: dict) -> list:
+def get_note_list() -> list:
     def search_all_notes(cur_path: str, indent: int = 0, dir_list=[]):
         prev_item = ""
 
         for indx, item in enumerate(sorted(os.listdir(cur_path))):
-            if "{}.{}".format(prev_item, config["extension"]) == item:
+            if "{}.{}".format(prev_item, config.get("extension")) == item:
                 continue
             if os.path.isdir(os.path.join(cur_path, item)) and "{}.{}".format(
-                item, config["extension"]
+                item, config.get("extension")
             ) in os.listdir(cur_path):
                 # Note with subfolder
                 dir_list.append(
                     Note(
-                        os.path.join(cur_path, f"{item}.{config['extension']}"), indent
+                        os.path.join(cur_path, f"{item}.{config.get('extension')}"),
+                        indent,
                     )
                 )
-            elif item.endswith(MARKDOWN_EXTENSIONS):
+            elif item.endswith(config.get("markdown_extensions")):
                 # Note Only
                 dir_list.append(Note(os.path.join(cur_path, item), indent))
 
@@ -91,7 +92,7 @@ def get_note_list(config: dict) -> list:
         return dir_list
 
     notes = []
-    for note_path in config["note_paths"]:
+    for note_path in config.get("note_paths"):
         notes.extend(search_all_notes(note_path, dir_list=[]))
     # result = list(Path(config["note_paths"][0]).rglob(f"*.{config['extension']}"))
     # for found in sorted(result):
@@ -105,16 +106,16 @@ def get_note_list(config: dict) -> list:
     return notes
 
 
-def view_note(view_note: dict, config: dict):
-    relevent_notes = search_note_by_name(view_note.view, config)
+def view_note(view_note: dict):
+    relevent_notes = search_note_by_name(view_note.view)
     found_note = None
     if not relevent_notes:
         print(f"No matching note titles containing {view_note.view}")
-        deep_search_within_note(view_note.view, config)
+        deep_search_within_note(view_note.view)
     elif len(relevent_notes) == 1:
         found_note = relevent_notes[0]
     else:
-        list_notes(relevent_notes, config)
+        list_notes(relevent_notes)
         options = [note.count_id for note in relevent_notes]
         choice = note_selection(f"Please select a note: {options}", options)
 
@@ -124,8 +125,8 @@ def view_note(view_note: dict, config: dict):
         MarkdownParse(found_note).print()
 
 
-def search_note_by_name(name, config: dict) -> list:
-    notes = get_note_list(config)
+def search_note_by_name(name) -> list:
+    notes = get_note_list()
     relevent_notes = []
     for note in notes:
         if name in str(note.min_path):
@@ -136,7 +137,7 @@ def search_note_by_name(name, config: dict) -> list:
     return relevent_notes
 
 
-def list_notes(note_list: list, config: dict, list_contents: bool = False):
+def list_notes(note_list: list, list_contents: bool = False):
     note_indx = 0
     note_indent = 0
     ident_str = f"{fontColor(Color.GREY)} - {fontReset()}"
@@ -169,13 +170,13 @@ def list_notes(note_list: list, config: dict, list_contents: bool = False):
                 )
 
 
-def alter_note(alter_note: dict, config: dict):
+def alter_note(alter_note: dict):
     title = alter_note.alter.split(".")[-1]
 
     note_path = os.path.join(
-        config["notes_paths"][0],
+        config.get("note_paths")[0],
         *alter_note.alter.split(".")[:-1],
-        (title + "." + config["extension"]),
+        (title + "." + config.get("extension")),
     )
 
     if os.path.exists(os.path.dirname(note_path)) is False:
@@ -185,19 +186,19 @@ def alter_note(alter_note: dict, config: dict):
         with open(note_path, "w") as note:
             note.write("#{}\n".format(title))
 
-    call([config["editor"], note_path])
+    call([config.get("editor"), note_path])
 
 
-def configre_notes(arguments: dict, config: dict):
-    call([config["editor"], CONFIG_FILE_NAME])
+def configre_notes(arguments: dict):
+    call([config.get("editor"), config.config_path])
 
 
-def delete_note(rm_note: dict, config: dict):
-    relevent_notes = search_note_by_name(rm_note.delete, config)
+def delete_note(rm_note: dict):
+    relevent_notes = search_note_by_name(rm_note.delete)
     choice = False
 
     if len(relevent_notes) > 1:
-        list_notes(relevent_notes, config)
+        list_notes(relevent_notes)
         options = [note.count_id for note in relevent_notes]
         choice = note_selection(f"Please select a note: {options}", options)
     elif confirm_choice("Do you wish to delete {}".format(relevent_notes[0].min_path)):
@@ -214,13 +215,13 @@ def delete_note(rm_note: dict, config: dict):
         print("Could not delete")
 
 
-def search_note(search_note: dict, config: dict):
-    relevent_notes = search_note_by_name(search_note.search, config)
-    list_notes(relevent_notes, config, list_contents=True)
+def search_note(search_note: dict):
+    relevent_notes = search_note_by_name(search_note.search)
+    list_notes(relevent_notes, list_contents=True)
 
 
-def deep_search_within_note(search_text: str, config: dict):
-    notes = get_note_list(config)
+def deep_search_within_note(search_text: str):
+    notes = get_note_list()
     regObj = re.compile(f".*{search_text}.*")
     relevent_notes = []
 
@@ -234,7 +235,7 @@ def deep_search_within_note(search_text: str, config: dict):
         if found_match:
             relevent_notes.append(note)
 
-    list_notes(relevent_notes, config)
+    list_notes(relevent_notes)
 
 
 def parse_args() -> dict:
@@ -292,21 +293,21 @@ def main():
     arguments = parse_args()
 
     if arguments.view:
-        view_note(arguments, config)
+        view_note(arguments)
     elif arguments.alter:
-        alter_note(arguments, config)
+        alter_note(arguments)
     elif arguments.delete:
-        delete_note(arguments, config)
+        delete_note(arguments)
     elif arguments.list:
-        list_notes(get_note_list(config), config)
+        list_notes(get_note_list())
     elif arguments.sublist:
-        list_notes(get_note_list(config), config, list_contents=True)
+        list_notes(get_note_list(), list_contents=True)
     elif arguments.search:
-        search_note(arguments, config)
+        search_note(arguments)
     elif arguments.dsearch:
-        deep_search_within_note(arguments.dsearch, config)
+        deep_search_within_note(arguments.dsearch)
     elif arguments.configure:
-        configre_notes(arguments, config)
+        configre_notes(arguments)
 
 
 if __name__ == "__main__":
