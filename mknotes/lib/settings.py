@@ -13,7 +13,7 @@ DEFAULT_CONFIG = {
     "extension": "md",
 }
 
-MARKDOWN_EXTENSIONS = [
+MARKDOWN_EXTENSIONS = ( 
     "md",
     "markdown",
     "mdown",
@@ -22,16 +22,16 @@ MARKDOWN_EXTENSIONS = [
     "mdwn",
     "mdtxt",
     "mdtext",
-]
-VIEW_OPTIONS = [
+    )
+VIEW_OPTIONS = (
     "combo",
     "dump",
     "interactive",
-]
-DEFAULT_EDITORS = [
+    )
+DEFAULT_EDITORS = (
     "vim",
     "nano",
-]
+    )
 
 
 def _read_config_file(config_file: dict, settings: dict) -> dict:

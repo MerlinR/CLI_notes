@@ -10,7 +10,7 @@ from typing import Optional
 from lib.definitions import Note
 from lib.misc import Color, Style, fontColor, fontReset
 from lib.parseMarkdown import MarkdownParse
-from lib.settings import CONFIG_FILE_NAME, config
+from lib.settings import CONFIG_FILE_NAME, MARKDOWN_EXTENSIONS, config
 
 
 def remove_suffix(string: str) -> str:
@@ -79,7 +79,7 @@ def get_note_list(config: dict) -> list:
                         os.path.join(cur_path, f"{item}.{config['extension']}"), indent
                     )
                 )
-            elif item.endswith(config["extension"]):
+            elif item.endswith(MARKDOWN_EXTENSIONS):
                 # Note Only
                 dir_list.append(Note(os.path.join(cur_path, item), indent))
 
