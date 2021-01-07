@@ -169,7 +169,7 @@ def list_notes(note_list: list, list_contents: bool = False):
                     + f"{fontColor(setcolor = Color.RED)}{line}{fontReset()}"
                 )
 
-
+#TODO Fix
 def alter_note(alter_note: dict):
     title = alter_note.alter.split(".")[-1]
 
@@ -189,7 +189,7 @@ def alter_note(alter_note: dict):
     call([config.get("editor"), note_path])
 
 
-def configre_notes(arguments: dict):
+def configure_config(arguments: dict):
     call([config.get("editor"), config.config_path])
 
 
@@ -307,7 +307,7 @@ def main():
     elif arguments.dsearch:
         deep_search_within_note(arguments.dsearch)
     elif arguments.configure:
-        configre_notes(arguments)
+        configure_config(arguments)
 
 
 if __name__ == "__main__":
