@@ -128,10 +128,11 @@ def view_note(view_note: dict):
 def search_note_by_name(name) -> list:
     notes = get_note_list()
     relevent_notes = []
+    regObj = re.compile(f".*{name}.*")
     for note in notes:
-        if name in str(note.min_path):
+        if regObj.match(str(note.min_path)):
             relevent_notes.append(note)
-        if name.isdigit() and int(name) == note.count_id:
+        elif name.isdigit() and int(name) == note.count_id:
             relevent_notes.append(note)
 
     return relevent_notes
