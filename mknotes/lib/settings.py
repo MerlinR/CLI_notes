@@ -2,6 +2,7 @@
 from configparser import ConfigParser
 from os import makedirs, path
 from shutil import which
+from typing import Optional
 
 DEFAULT_LOC = path.join(path.expanduser("~"), ".mknotes")
 CONFIG_FILE_NAME = path.join(DEFAULT_LOC, "mknotes.cfg")
@@ -46,11 +47,15 @@ class Settings:
             if not path.exists(path.dirname(self.config_path)):
                 makedirs(path.dirname(self.config_path))
 
-        # TODO Dont auto create note path? Throw error for missing dir
-        self._extra["note_paths"] = self._config["notes_location"].split(",")
-        for note_path in self._extra["note_paths"]:
+        self._extra["note_paths"] = []
+        for note_path in self._config["notes_location"].split(","):
             if path.exists(note_path) is False:
-                makedirs(note_path)
+                if self._confirm_choice(f"Path {note_path} does not exist, create it?"):
+                    makedirs(note_path)
+                    self._extra["note_paths"].append(note_path)
+            else:
+                self._extra["note_paths"].append(note_path)
+        self._config["notes_location"] = ",".join(self._extra["note_paths"]) 
 
         # TODO Handle commands for editor
         if path.exists(self._config["editor"]) is False:
@@ -109,6 +114,18 @@ class Settings:
             return self._config[key]
         else:
             return self._extra.get(key)
+    
+    def _confirm_choice(self, msg: Optional[str] = False) -> bool:
+        if msg:
+            print(msg)
+
+        confirm = None
+        while confirm != "c" and confirm != "v":
+            confirm = input("[c]Confirm or [v]Void: ")
+            if confirm != "c" and confirm != "v":
+                print("\n Invalid Option. Please Enter a Valid Option.")
+
+        return True if (confirm == "c") else False
 
 
 config = Settings()
