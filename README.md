@@ -17,7 +17,7 @@ $ notes -a bullet
 $ notes 
  (1)	 - bullet.README
  (2)	 - magnetToTorrent.README
- (3)	 - mknotes.README
+ (3)	 - notes.README
  (4)	 - pitopexercise.README
  (5)	 - ttcnotify.README
  (6)	 - yt_album_dl.README

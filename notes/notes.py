@@ -242,7 +242,7 @@ def deep_search_within_note(search_text: str):
 
 def parse_args() -> dict:
     arguments = argparse.ArgumentParser(
-        description="mknotes. Simple cli tool for creating and managing markdown notes."
+        description="Notes. Simple cli tool for creating and managing markdown notes."
     )
 
     arguments.add_argument(

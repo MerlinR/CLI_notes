@@ -4,8 +4,8 @@ from os import makedirs, path
 from shutil import which
 from typing import Optional
 
-DEFAULT_LOC = path.join(path.expanduser("~"), ".mknotes")
-CONFIG_FILE_NAME = path.join(DEFAULT_LOC, "mknotes.cfg")
+DEFAULT_LOC = path.join(path.expanduser("~"), ".notes")
+CONFIG_FILE_NAME = path.join(DEFAULT_LOC, "notes.cfg")
 CONFIG_SECTION = "settings"
 DEFAULT_CONFIG = {
     "notes_location": path.join(DEFAULT_LOC, "notes"),
