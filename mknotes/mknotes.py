@@ -107,10 +107,13 @@ def get_note_list() -> list:
 
 
 def view_note(view_note: dict):
-    relevent_notes = search_note_by_name(view_note.view)
+    if os.path.isfile(view_note.view):
+        relevent_notes = [Note(view_note.view)]
+    else:
+        relevent_notes = search_note_by_name(view_note.view)
     found_note = None
     if not relevent_notes:
-        print(f"No matching note titles containing {view_note.view}")
+        print(f"No matching note called or containing: {view_note.view}")
         deep_search_within_note(view_note.view)
     elif len(relevent_notes) == 1:
         found_note = relevent_notes[0]
