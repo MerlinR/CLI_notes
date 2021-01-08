@@ -144,21 +144,19 @@ def search_note_by_name(name) -> list:
 def list_notes(note_list: list, list_contents: bool = False):
     note_indx = 0
     note_indent = 0
-    ident_str = f"{fontColor(Color.GREY)} - {fontReset()}"
 
     for note in note_list:
         note_name = os.path.basename(note.path)
         note_indent = note.indent
 
         print(
+            f"{fontColor(Color.GREY, bright = True, style = Style.ITALIC)} ({note.count_id}){fontReset()}", end="\t"
+        )
+        print(
             " "
-            + f"{ident_str}{fontColor()}{remove_suffix(note.min_path)}{fontReset()}",
-            end="",
+            + f"- {fontColor()}{remove_suffix(note.min_path)}{fontReset()}",
         )
 
-        print(
-            f"{fontColor(Color.GREY, style = Style.ITALIC)}({note.count_id}){fontReset()}"
-        )
 
         if list_contents:
             for line in note.contents.splitlines():
