@@ -20,7 +20,6 @@ class MarkdownParse:
         if not os.path.exists(note.path):
             print(f"{note.name} does not exist")
             sys.exit(1)
-        self._configure_mdv()
 
     def _read_raw_markdown(self):
         markdown = None
@@ -39,8 +38,8 @@ class MarkdownParse:
             pydoc.pipepager(
                 mdv.main(
                     raw_markdown,
-                    theme=self._MDV_theme_id,
-                    header_nrs=self._MDV_headers
+                    theme = self._MDV_theme_id,
+                    header_nrs = self._MDV_headers,
                 ),
                 cmd="less -R",
             )

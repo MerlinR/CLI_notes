@@ -2,18 +2,20 @@
 Notes is a simple CLI tool for Creating, Reading and managing personal notes using Markdown.
 The tool holds it's own directory of Markdown Notes which is used by default, multiple paths can be given
 including a workspace containing Markdown README files.
+Relies upon [terminal markdown viewer (MDV)](https://github.com/axiros/terminal_markdown_viewer) to parse and output
+the Markdown.
 
 ## Usage
 
 ### Creating/Editing Note
-```bash
+```
 $ notes -a bullet
  - bullet.README
 ...
 ```
 
 ### Listing notes
-```bash
+```
 $ notes 
  (1)	 - bullet.README
  (2)	 - magnetToTorrent.README
@@ -24,14 +26,14 @@ $ notes
 ```
 
 ### Reading notes
-```bash
-$ notes bullet 
+```
+$ notes bullet
 bullet.README
 ...
 ```
 
 ### Searching notes
-```bash
+```
 $ notes this
 No matching note called: this
  (17)    - ttcnotify.README
@@ -39,7 +41,7 @@ No matching note called: this
     36: The simple script requires a URL to alter, for this initially search TTC for the item. Copy the URL into the
 ```
 
-```bash
+```
 $ notes a
  (1)	 - a
  (2)	 - a.1
@@ -74,6 +76,14 @@ Note selection or [q]uit:
  - Search notes, regex either by note name or it's contents, list all matches
     outputs if single match
 
+
+## Installation
+
+### Requirements
+Only requirement being [MDV](https://github.com/axiros/terminal_markdown_viewer)
+```
+$ pip install -R requirements.txt
+```
 
 ## ToDo
  - Pip Packaged
