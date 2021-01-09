@@ -94,6 +94,7 @@ def get_note_list() -> list:
     notes = []
     for note_path in config.get("note_paths"):
         notes.extend(search_all_notes(note_path, dir_list=[]))
+    # Easier way to get all MD files, although order is not as pleased
     # result = list(Path(config["note_paths"][0]).rglob(f"*.{config['extension']}"))
     # for found in sorted(result):
     #    notes.append(Note(str(found)))
