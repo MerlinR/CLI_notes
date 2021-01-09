@@ -65,6 +65,7 @@ class Settings:
         self._config["extension"] = self._validate_extension(self._config["extension"])
 
         self._extra["markdown_extensions"] = MARKDOWN_EXTENSIONS
+        self._extra["primary_note_dir"] = self._extra["note_paths"][0]
         self._write_config_file()
 
     def _read_config_file(self):

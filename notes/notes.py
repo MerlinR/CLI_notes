@@ -173,22 +173,25 @@ def list_notes(note_list: list, list_contents: bool = False):
 
 #TODO Fix
 def alter_note(alter_note: dict):
-    title = alter_note.alter.split(".")[-1]
+    title = alter_note.alter
+    if title.split(".")[-1] in config.get("markdown_extensions"):
+        title = os.path.join(*title.split(".")[:-1])
+    
+    title = title.replace(".","/")
 
-    note_path = os.path.join(
-        config.get("note_paths")[0],
-        *alter_note.alter.split(".")[:-1],
-        (title + "." + config.get("extension")),
-    )
+    note = Note(os.path.join(config.get("primary_note_dir"),f"{title}.{config.get('extension')}"))
 
-    if os.path.exists(os.path.dirname(note_path)) is False:
-        makedirs(os.path.dirname(note_path))
+    if os.path.exists(os.path.dirname(note.path)) is False:
+        if confirm_choice(f"Create note path {os.path.dirname(note.path)}?"):
+            makedirs(os.path.dirname(note.path))
+        else:
+            return
 
-    if os.path.isfile(note_path) is False:
-        with open(note_path, "w") as note:
-            note.write("#{}\n".format(title))
+    if os.path.isfile(note.path) is False:
+        with open(note.path, "w") as note_file:
+            note_file.write("#{}\n".format(note.name))
 
-    call([config.get("editor"), note_path])
+    call([config.get("editor"), note.path])
 
 
 def configure_config(arguments: dict):
