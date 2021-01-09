@@ -106,15 +106,15 @@ def get_note_list() -> list:
     return notes
 
 
-def view_note(view_note: dict):
-    if os.path.isfile(view_note.view):
-        relevent_notes = [Note(view_note.view)]
+def view_note(view_note: str):
+    if os.path.isfile(view_note):
+        relevent_notes = [Note(view_not)]
     else:
-        relevent_notes = search_note_by_name(view_note.view)
+        relevent_notes = search_note_by_name(view_note)
     found_note = None
     if not relevent_notes:
-        print(f"No matching note called or containing: {view_note.view}")
-        deep_search_within_note(view_note.view)
+        print(f"No matching note called or containing: {view_note}")
+        deep_search_within_note(view_note)
     elif len(relevent_notes) == 1:
         found_note = relevent_notes[0]
     else:
@@ -128,7 +128,7 @@ def view_note(view_note: dict):
         MarkdownParse(found_note).print()
 
 
-def search_note_by_name(name) -> list:
+def search_note_by_name(name: str) -> list:
     notes = get_note_list()
     relevent_notes = []
     regObj = re.compile(f".*{name}.*")
@@ -171,8 +171,8 @@ def list_notes(note_list: list, list_contents: bool = False):
                 )
 
 
-def alter_note(alter_note: dict):
-    title = alter_note.alter
+def alter_note(alter_note: str):
+    title = alter_note
     if title.split(".")[-1] in config.get("markdown_extensions"):
         title = os.path.join(*title.split(".")[:-1])
 
@@ -197,12 +197,12 @@ def alter_note(alter_note: dict):
     call([config.get("editor"), note.path])
 
 
-def configure_config(arguments: dict):
+def configure_config(configure: str):
     call([config.get("editor"), config.config_path])
 
 
-def delete_note(rm_note: dict):
-    relevent_notes = search_note_by_name(rm_note.delete)
+def delete_note(rm_note: str):
+    relevent_notes = search_note_by_name(rm_note)
     choice = False
 
     if len(relevent_notes) > 1:
@@ -212,7 +212,7 @@ def delete_note(rm_note: dict):
     elif confirm_choice("Do you wish to delete {}".format(relevent_notes[0].min_path)):
         choice = relevent_notes[0].count_id
     elif not choice:
-        print(f"Not deleting: {rm_note.delete}")
+        print(f"Not deleting: {rm_note}")
         return
 
     note = [note for note in relevent_notes if note.count_id == choice][0]
@@ -223,8 +223,8 @@ def delete_note(rm_note: dict):
         print("Could not delete")
 
 
-def search_note(search_note: dict):
-    relevent_notes = search_note_by_name(search_note.search)
+def search_note(search_note: str):
+    relevent_notes = search_note_by_name(search_note)
     list_notes(relevent_notes, list_contents=True)
 
 
@@ -301,21 +301,21 @@ def main():
     arguments = parse_args()
 
     if arguments.view:
-        view_note(arguments)
+        view_note(arguments.view)
     elif arguments.alter:
-        alter_note(arguments)
+        alter_note(arguments.alter)
     elif arguments.delete:
-        delete_note(arguments)
+        delete_note(arguments.delete)
     elif arguments.list:
         list_notes(get_note_list())
     elif arguments.sublist:
         list_notes(get_note_list(), list_contents=True)
     elif arguments.search:
-        search_note(arguments)
+        search_note(arguments.search)
     elif arguments.dsearch:
         deep_search_within_note(arguments.dsearch)
     elif arguments.configure:
-        configure_config(arguments)
+        configure_config(arguments.configure)
 
 
 if __name__ == "__main__":
