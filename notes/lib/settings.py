@@ -55,7 +55,7 @@ class Settings:
                     self._extra["note_paths"].append(note_path)
             else:
                 self._extra["note_paths"].append(note_path)
-        self._config["notes_location"] = ",".join(self._extra["note_paths"]) 
+        self._config["notes_location"] = ",".join(self._extra["note_paths"])
 
         # TODO Handle commands for editor
         if path.exists(self._config["editor"]) is False:
@@ -115,7 +115,7 @@ class Settings:
             return self._config[key]
         else:
             return self._extra.get(key)
-    
+
     def _confirm_choice(self, msg: Optional[str] = False) -> bool:
         if msg:
             print(msg)

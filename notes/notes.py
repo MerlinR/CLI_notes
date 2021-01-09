@@ -150,13 +150,12 @@ def list_notes(note_list: list, list_contents: bool = False):
         note_indent = note.indent
 
         print(
-            f"{fontColor(Color.GREY, bright = True, style = Style.ITALIC)} ({note.count_id}){fontReset()}", end="\t"
+            f"{fontColor(Color.GREY, bright = True, style = Style.ITALIC)} ({note.count_id}){fontReset()}",
+            end="\t",
         )
         print(
-            " "
-            + f"- {fontColor()}{remove_suffix(note.min_path)}{fontReset()}",
+            " " + f"- {fontColor()}{remove_suffix(note.min_path)}{fontReset()}",
         )
-
 
         if list_contents:
             for line in note.contents.splitlines():
@@ -171,15 +170,19 @@ def list_notes(note_list: list, list_contents: bool = False):
                     + f"{fontColor(setcolor = Color.RED)}{line}{fontReset()}"
                 )
 
-#TODO Fix
+
 def alter_note(alter_note: dict):
     title = alter_note.alter
     if title.split(".")[-1] in config.get("markdown_extensions"):
         title = os.path.join(*title.split(".")[:-1])
-    
-    title = title.replace(".","/")
 
-    note = Note(os.path.join(config.get("primary_note_dir"),f"{title}.{config.get('extension')}"))
+    title = title.replace(".", "/")
+
+    note = Note(
+        os.path.join(
+            config.get("primary_note_dir"), f"{title}.{config.get('extension')}"
+        )
+    )
 
     if os.path.exists(os.path.dirname(note.path)) is False:
         if confirm_choice(f"Create note path {os.path.dirname(note.path)}?"):

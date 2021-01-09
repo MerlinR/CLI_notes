@@ -38,8 +38,8 @@ class MarkdownParse:
             pydoc.pipepager(
                 mdv.main(
                     raw_markdown,
-                    theme = self._MDV_theme_id,
-                    header_nrs = self._MDV_headers,
+                    theme=self._MDV_theme_id,
+                    header_nrs=self._MDV_headers,
                 ),
                 cmd="less -R",
             )
