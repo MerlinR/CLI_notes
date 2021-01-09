@@ -4,8 +4,13 @@ import pydoc
 import sys
 
 import mdv
-from lib.definitions import Note
-from lib.misc import Color, Style, fontColor, fontReset
+
+try:
+    from notes.lib.definitions import Note
+    from notes.lib.misc import Color, Style, fontColor, fontReset
+except:
+    from lib.definitions import Note
+    from lib.misc import Color, Style, fontColor, fontReset
 
 
 class MarkdownParse:
