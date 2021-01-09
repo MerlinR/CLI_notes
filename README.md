@@ -87,6 +87,7 @@ $ pip install -R requirements.txt
  - 
 ### Wishlist
  - Markdown color customisation (Should be easy with MDV)
+ - create folder only
  - Delete by folder
  - notes links to other notes
  - Dynamic notes (runs commands to import into note, E.G "ls", "ip a", etc
