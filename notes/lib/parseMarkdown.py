@@ -4,11 +4,15 @@ import pydoc
 import sys
 
 import mdv
+from notes.
+
 
 try:
+    from notes.lib.settings import config
     from notes.lib.definitions import Note
     from notes.lib.misc import Color, Style, fontColor, fontReset
 except:
+    from lib.settings import config
     from lib.definitions import Note
     from lib.misc import Color, Style, fontColor, fontReset
 
@@ -39,7 +43,16 @@ class MarkdownParse:
         raw_markdown = self._read_raw_markdown()
 
         mdv.term_columns = 60
-        if len(raw_markdown) > int(rows):
+        if config.get("view-mode") == "interactive":
+            pydoc.pipepager(
+                mdv.main(
+                    raw_markdown,
+                    theme=self._MDV_theme_id,
+                    header_nrs=self._MDV_headers,
+                ),
+                cmd="less -R",
+            )
+        elif config.get("view-mode") == "combo" and len(raw_markdown) > int(rows):
             pydoc.pipepager(
                 mdv.main(
                     raw_markdown,
