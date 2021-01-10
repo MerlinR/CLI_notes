@@ -201,11 +201,11 @@ def alter_note(alter_note: str):
         with open(note.path, "w") as note_file:
             note_file.write("#{}\n".format(note.name))
 
-    call([config.get("editor"), note.path])
+    call(f"{config.get('editor')} {note.path}", shell=True)
 
 
 def configure_config(configure: str):
-    call([config.get("editor"), config.config_path])
+    call(f"{config.get('editor')} {config.config_path}", shell=True)
 
 
 def delete_note(rm_note: str):

@@ -57,7 +57,6 @@ class Settings:
                 self._extra["note_paths"].append(note_path)
         self._config["notes_location"] = ",".join(self._extra["note_paths"])
 
-        # TODO Handle commands for editor
         if path.exists(self._config["editor"]) is False:
             self._config["editor"] = self._validate_editor(self._config["editor"])
 
@@ -86,12 +85,13 @@ class Settings:
     def _config_error(self, message: str):
         raise ValueError("ERROR: {} configuration: {}".format(self._config, message))
 
-    # TODO Little broken? auto's VIM without saying
     def _validate_editor(self, tool: str) -> str:
-        default_editors = tuple(tool) + DEFAULT_EDITORS
-
+        default_editors = DEFAULT_EDITORS
+        if which(tool.split(" ")[0]):
+            return tool
         for editor in default_editors:
             if which(editor):
+                print(f"ERROR: {tool} invalid, using {editor}")
                 return which(editor)
 
         _config_error("Editor", "Cannot find usable editor {}".format(default_editors))
