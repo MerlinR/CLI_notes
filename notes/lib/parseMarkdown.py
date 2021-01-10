@@ -4,17 +4,15 @@ import pydoc
 import sys
 
 import mdv
-from notes.
-
 
 try:
-    from notes.lib.settings import config
     from notes.lib.definitions import Note
     from notes.lib.misc import Color, Style, fontColor, fontReset
+    from notes.lib.settings import config
 except:
-    from lib.settings import config
     from lib.definitions import Note
     from lib.misc import Color, Style, fontColor, fontReset
+    from lib.settings import config
 
 
 class MarkdownParse:
