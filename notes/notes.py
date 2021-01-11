@@ -217,29 +217,22 @@ def delete_note(rm_note: str, deleteDir = None):
     relevent_notes = search_note_by_name(rm_note)
     choice = False
     
-    if deleteDir:
-        relevent_dirs = []
-        for note in relevent_notes:
-            relevent_dirs.append(os.path.dirname(note.path))
-        relevent_dirs = set(relevent_dirs)
-        print(relevent_dirs)
-    else:
-        if len(relevent_notes) > 1:
-            list_notes(relevent_notes)
-            options = [note.count_id for note in relevent_notes]
-            choice = note_selection(f"Please select a note: {options}", options)
-        elif confirm_choice("Do you wish to delete {}".format(relevent_notes[0].min_path)):
-            choice = relevent_notes[0].count_id
-        elif not choice:
-            print(f"Not deleting: {rm_note}")
-            return
+    if len(relevent_notes) > 1:
+        list_notes(relevent_notes)
+        options = [note.count_id for note in relevent_notes]
+        choice = note_selection(f"Please select a note: {options}", options)
+    elif confirm_choice("Do you wish to delete {}".format(relevent_notes[0].min_path)):
+        choice = relevent_notes[0].count_id
+    elif not choice:
+        print(f"Not deleting: {rm_note}")
+        return
 
-        note = [note for note in relevent_notes if note.count_id == choice][0]
-        try:
-            os.remove(note.path)
-            print(f"Deleted {note.min_path}")
-        except:
-            print("Could not delete")
+    note = [note for note in relevent_notes if note.count_id == choice][0]
+    try:
+        os.remove(note.path)
+        print(f"Deleted {note.min_path}")
+    except:
+        print("Could not delete")
 
 
 def search_note(search_note: str):
