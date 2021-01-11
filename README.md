@@ -17,6 +17,7 @@ the Markdown.
 ### Options
     <text>                      Positional argument, a note name or text within a note
     -a | --alter        <name>  Add/Alter a new note
+        --dir        <name>     Optional argument to  create a project directory then a note
     -d | --delete       <name>  Deletes notes
     -l | --list                 List the notes (Default action)
     -ll| --sub-list             List notes and their table of contents
@@ -81,17 +82,14 @@ $ pip install -R requirements.txt
 ```
 
 ## ToDo
- - Pip Packaged
+ - Pip Packaged (Correctly)
  - Unit Tests
  - search by Shiet note ID 
- - 
+ - Ability to delete dir
+
 ### Wishlist
  - Markdown color customisation (Should be easy with MDV)
- - create folder only
- - Delete by folder
- - notes links to other notes
  - Dynamic notes (runs commands to import into note, E.G "ls", "ip a", etc
  - Configure option to allow single config change rather the open file
+ - notes links to other notes - Maybe possible with MDV changes or swiching to MAN pages
  - Flat pack notes? (compress)
- - Interactive mode
-    ''-i | --interactive          Interactive mode, uses Less to display rather then dump''

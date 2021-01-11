@@ -178,7 +178,7 @@ def list_notes(note_list: list, list_contents: bool = False):
                 )
 
 
-def alter_note(alter_note: str):
+def alter_note(alter_note: str, createDir = None):
     title = alter_note
     if title.split(".")[-1] in config.get("markdown_extensions"):
         title = os.path.join(*title.split(".")[:-1])
@@ -191,9 +191,14 @@ def alter_note(alter_note: str):
         )
     )
 
-    if os.path.exists(os.path.dirname(note.path)) is False:
+    if createDir:
+        newPath = f"{remove_suffix(note.path)}"
+        if os.path.exists(newPath) is False:
+            os.makedirs(newPath)
+        return
+    elif os.path.exists(os.path.dirname(note.path)) is False:
         if confirm_choice(f"Create note path {os.path.dirname(note.path)}?"):
-            makedirs(os.path.dirname(note.path))
+            os.makedirs(os.path.dirname(note.path))
         else:
             return
 
@@ -208,26 +213,33 @@ def configure_config(configure: str):
     call(f"{config.get('editor')} {config.config_path}", shell=True)
 
 
-def delete_note(rm_note: str):
+def delete_note(rm_note: str, deleteDir = None):
     relevent_notes = search_note_by_name(rm_note)
     choice = False
+    
+    if deleteDir:
+        relevent_dirs = []
+        for note in relevent_notes:
+            relevent_dirs.append(os.path.dirname(note.path))
+        relevent_dirs = set(relevent_dirs)
+        print(relevent_dirs)
+    else:
+        if len(relevent_notes) > 1:
+            list_notes(relevent_notes)
+            options = [note.count_id for note in relevent_notes]
+            choice = note_selection(f"Please select a note: {options}", options)
+        elif confirm_choice("Do you wish to delete {}".format(relevent_notes[0].min_path)):
+            choice = relevent_notes[0].count_id
+        elif not choice:
+            print(f"Not deleting: {rm_note}")
+            return
 
-    if len(relevent_notes) > 1:
-        list_notes(relevent_notes)
-        options = [note.count_id for note in relevent_notes]
-        choice = note_selection(f"Please select a note: {options}", options)
-    elif confirm_choice("Do you wish to delete {}".format(relevent_notes[0].min_path)):
-        choice = relevent_notes[0].count_id
-    elif not choice:
-        print(f"Not deleting: {rm_note}")
-        return
-
-    note = [note for note in relevent_notes if note.count_id == choice][0]
-    try:
-        os.remove(note_path)
-        print(f"Deleted {note.min_path}")
-    except:
-        print("Could not delete")
+        note = [note for note in relevent_notes if note.count_id == choice][0]
+        try:
+            os.remove(note.path)
+            print(f"Deleted {note.min_path}")
+        except:
+            print("Could not delete")
 
 
 def search_note(search_note: str):
@@ -265,6 +277,11 @@ def parse_args() -> dict:
     arguments.add_argument(
         "-a", "--alter", dest="alter", type=str, help="Add/Edit note"
     )
+
+    arguments.add_argument(
+        "--dir", dest="dirOption", action="store_true", default=None, help="creates directory as a project rather then MD file"
+    )
+
     arguments.add_argument(
         "-l", "--list", dest="list", action="store_true", help="list notes"
     )
@@ -297,7 +314,10 @@ def parse_args() -> dict:
     )
 
     args = arguments.parse_args()
-
+    
+    if args.dirOption and (args.alter is None and args.delete is None):
+        print("--dir only used in conjuction with --alter to create a project dir")
+        sys.exit()
     if len(sys.argv) < 2:
         args.list = True
 
@@ -310,9 +330,9 @@ def main():
     if arguments.view:
         view_note(arguments.view)
     elif arguments.alter:
-        alter_note(arguments.alter)
+        alter_note(arguments.alter, arguments.dirOption)
     elif arguments.delete:
-        delete_note(arguments.delete)
+        delete_note(arguments.delete, arguments.dirOption)
     elif arguments.list:
         list_notes(get_note_list())
     elif arguments.sublist:
