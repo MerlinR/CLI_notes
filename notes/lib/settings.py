@@ -116,6 +116,12 @@ class Settings:
             return self._config[key]
         else:
             return self._extra.get(key)
+    
+    def set(self, key: str, value: str):
+        if self._config.get(key):
+            self._config[key] = value
+        elif self._extra.get(key):
+            self._extra[key] = value
 
     def _confirm_choice(self, msg: Optional[str] = False) -> bool:
         if msg:

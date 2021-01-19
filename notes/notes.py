@@ -1,11 +1,10 @@
 #!/usr/bin/python3
 import argparse
 import os
-import re
 import sys
 from pathlib import Path
 from subprocess import call
-from typing import Optional
+from typing import List, Optional
 
 from notes.lib.definitions import Note
 from notes.lib.misc import Color, Style, fontColor, fontReset
@@ -49,20 +48,6 @@ def confirm_choice(msg: Optional[str] = False) -> bool:
     return True if (confirm == "c") else False
 
 
-def get_note_contents(path: str) -> str:
-    regObj = re.compile(f"^\s*#+.*")
-    contents = ""
-
-    with open(path) as f:
-        for line in f:
-            if regObj.match(line):
-                level = line.count("#")
-                contents += "  " * level
-                contents += line.replace("#", "").strip() + "\n"
-
-    return contents
-
-
 def get_note_list() -> list:
     def search_all_notes(cur_path: str, indent: int = 0, dir_list=[]):
         prev_item = ""
@@ -77,12 +62,12 @@ def get_note_list() -> list:
                 dir_list.append(
                     Note(
                         os.path.join(cur_path, f"{item}.{config.get('extension')}"),
-                        indent,
+                        indent = indent,
                     )
                 )
             elif item.endswith(config.get("markdown_extensions")):
                 # Note Only
-                dir_list.append(Note(os.path.join(cur_path, item), indent))
+                dir_list.append(Note(os.path.join(cur_path, item), indent = indent))
 
             if os.path.isdir(os.path.join(cur_path, item)):
                 search_all_notes(
@@ -102,7 +87,6 @@ def get_note_list() -> list:
     count = 1
     for note in notes:
         note.count_id = count
-        note.contents = get_note_contents(note.path)
         count += 1
     return notes
 
@@ -159,10 +143,10 @@ def list_notes(note_list: list, list_contents: bool = False):
         )
 
         if list_contents:
-            for line in note.contents.splitlines():
+            for content in note.contents:
                 print(
-                    "  " * (note_indent + 1)
-                    + f"{fontColor(setcolor = Color.YELLOW)}{line}{fontReset()}"
+                    "  " * content.indent
+                    + f"{fontColor(setcolor = Color.YELLOW)}{content.title}{fontReset()}"
                 )
         if note.extra_info:
             for line in note.extra_info.splitlines():
@@ -172,8 +156,8 @@ def list_notes(note_list: list, list_contents: bool = False):
                 )
 
 
-def alter_note(alter_note: str, createDir=None):
-    title = alter_note
+def alter_note(alter_note: List[str], createDir: bool = None):
+    title = alter_note[0]
     if title.split(".")[-1] in config.get("markdown_extensions"):
         title = os.path.join(*title.split(".")[:-1])
 
@@ -198,9 +182,12 @@ def alter_note(alter_note: str, createDir=None):
 
     if os.path.isfile(note.path) is False:
         with open(note.path, "w") as note_file:
-            note_file.write("#{}\n".format(note.name))
-
-    call(f"{config.get('editor')} {note.path}", shell=True)
+            note_file.write(f"#{note.name}\n")
+    try:
+        with open(note.path, "a") as note_file:
+            note_file.write(alter_note[1])
+    except:
+        call(f"{config.get('editor')} {note.path}", shell=True)
 
 
 def configure_config(configure: str):
@@ -262,7 +249,7 @@ def parse_args() -> dict:
     )
 
     arguments.add_argument(
-        "-a", "--alter", dest="alter", type=str, help="Add/Edit note"
+        "-a", "--alter", dest="alter", nargs="+", type=str, help="Add/Edit note"
     )
 
     arguments.add_argument(
