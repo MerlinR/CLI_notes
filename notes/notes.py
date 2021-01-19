@@ -2,6 +2,7 @@
 import argparse
 import os
 import sys
+import re
 from pathlib import Path
 from subprocess import call
 from typing import List, Optional
@@ -221,9 +222,9 @@ def search_note(search_note: str):
     list_notes(relevent_notes, list_contents=True)
 
 
-def deep_search_within_note(search_text: str):
+def deep_search_for_text(text: str) -> List[Note]:
     notes = get_note_list()
-    regObj = re.compile(f".*{search_text}.*")
+    regObj = re.compile(f".*{text}.*")
     relevent_notes = []
 
     for note in notes:
@@ -236,7 +237,10 @@ def deep_search_within_note(search_text: str):
         if found_match:
             relevent_notes.append(note)
 
-    list_notes(relevent_notes)
+    return relevent_notes
+
+def deep_search_within_note(search_text: str):
+    list_notes(deep_search_for_text(search_text))
 
 
 def parse_args() -> dict:
