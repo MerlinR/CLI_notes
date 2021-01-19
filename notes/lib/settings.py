@@ -12,6 +12,7 @@ DEFAULT_CONFIG = {
     "editor": "vim",
     "view-mode": "combo",
     "extension": "md",
+    "color_scheme": "637.2829",
 }
 
 MARKDOWN_EXTENSIONS = (

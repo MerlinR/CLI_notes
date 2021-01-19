@@ -14,7 +14,7 @@ class MarkdownParse:
     name = ""
     _notePath = ""
     # MDV settings
-    _MDV_theme_id = "637.2829"
+    _MDV_theme_id = config.get("color_scheme")
     _MDV_headers = "1-"
 
     def __init__(self, note: Note):

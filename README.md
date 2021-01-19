@@ -34,6 +34,13 @@ Full examples of usage can be seen [here](Examples.md)
 The configuration file for notes is stored under `$HOME`, such as `~/.notes/notes.cfg`
 The config files stores what markdown format to use and the notes directory path.
 
+### Notes path 
+The `notes_location` is the location's the script searches for notes to display, the path can be one or multiple paths seperated by a comma; example: `/home/merlin/.notes/,/home/merlin/workspace/python`
+Only the first path supplied is used when creating new notes.
+
+## Color Scheme
+The color scheme is controlled by MDV and can be configured within the configuration file, the `color_scheme` id list can be found [here](https://github.com/axiros/terminal_markdown_viewer/blob/master/mdv/ansi_tables.json).
+
 ## Installation
 Notes requires `python3` for installation and can be installed via:
 ```
@@ -53,14 +60,13 @@ $ python3 -m notes.notes
 ```
 
 ## ToDo
- - Pip Packaged (Correctly)
  - Unit Tests
  - search by Shiet note ID 
  - Ability to delete dir
 
 ### Wishlist
- - Markdown color customisation (Should be easy with MDV)
+ - Markdown color customisation (Allow custom json color scheme)
  - Dynamic notes (runs commands to import into note, E.G "ls", "ip a", etc
  - Configure option to allow single config change rather the open file
- - notes links to other notes - Maybe possible with MDV changes or swiching to MAN pages
+ - notes links to other notes - Maybe possible with MDV changes or swiching to MAN pages, BIG wish
  - Flat pack notes? (compress)
