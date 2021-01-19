@@ -157,7 +157,7 @@ def list_notes(note_list: list, list_contents: bool = False):
                 )
 
 
-def alter_note(alter_note: List[str], createDir: bool = None):
+def alter_note(alter_note: List[str], createDir: bool = False):
     title = alter_note[0]
     if title.split(".")[-1] in config.get("markdown_extensions"):
         title = os.path.join(*title.split(".")[:-1])
@@ -195,7 +195,7 @@ def configure_config(configure: str):
     call(f"{config.get('editor')} {config.config_path}", shell=True)
 
 
-def delete_note(rm_note: str, deleteDir=None):
+def delete_note(rm_note: str, deleteDir: bool = False, confirm: bool = True):
     relevent_notes = search_note_by_name(rm_note)
     choice = False
 
@@ -203,7 +203,7 @@ def delete_note(rm_note: str, deleteDir=None):
         list_notes(relevent_notes)
         options = [note.count_id for note in relevent_notes]
         choice = note_selection(f"Please select a note: {options}", options)
-    elif confirm_choice("Do you wish to delete {}".format(relevent_notes[0].min_path)):
+    elif not confirm or confirm_choice("Do you wish to delete {}".format(relevent_notes[0].min_path)):
         choice = relevent_notes[0].count_id
     elif not choice:
         print(f"Not deleting: {rm_note}")
