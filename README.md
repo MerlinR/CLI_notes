@@ -14,6 +14,8 @@ the Markdown.
     outputs if single match
 
 ## Usage
+Full examples of usage can be seen [here](Examples.md)
+
 ### Options
     <text>                      Positional argument, a note name or text within a note
     -a | --alter        <name>  Add/Alter a new note
@@ -27,58 +29,17 @@ the Markdown.
     -c | --config               Alter the configurations for CLI notes
     -h | --help                 The help menu
 
-### Creating/Editing Note
-```
-$ notes -a bullet
- - bullet.README
-...
-```
-
-### Listing notes
-```
-$ notes 
- (1)	 - bullet.README
- (2)	 - magnetToTorrent.README
- (3)	 - notes.README
- (4)	 - pitopexercise.README
- (5)	 - ttcnotify.README
- (6)	 - ytalbumdl.README
-```
-
-### Reading notes
-```
-$ notes bullet
-bullet.README
-...
-```
-
-### Searching notes
-```
-$ notes this
-No matching note called: this
- (17)    - ttcnotify.README
-    32:   -h, --help            show this help message and exit
-    36: The simple script requires a URL to alter, for this initially search TTC for the item. Copy the URL into the
-```
-
-```
-$ notes a
- (1)	 - a
- (2)	 - a.1
- (3)	 - a.2
- (4)	 - a2
- (14)	 - magnetToTorrent.README
- (18)	 - yt_album_dl.README
-Please select a note: [1, 2, 3, 4, 14, 18]
-Note selection or [q]uit:
-```
 
 ## Installation
+Notes requires `python3` for installation and can be installed via:
+```
+$ pip3 install .
+```
 
 ### Requirements
 Only requirement being [MDV](https://github.com/axiros/terminal_markdown_viewer)
 ```
-$ pip install -R requirements.txt
+$ pip3 install -R requirements.txt
 ```
 
 ## Dev Running
