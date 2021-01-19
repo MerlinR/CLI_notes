@@ -4,10 +4,7 @@ import hashlib
 import os
 from dataclasses import dataclass
 
-try:
-    from notes.lib.settings import config
-except:
-    from lib.settings import config
+from notes.lib.settings import config
 
 
 @dataclass

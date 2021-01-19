@@ -7,16 +7,10 @@ from pathlib import Path
 from subprocess import call
 from typing import Optional
 
-try:
-    from notes.lib.definitions import Note
-    from notes.lib.misc import Color, Style, fontColor, fontReset
-    from notes.lib.parseMarkdown import MarkdownParse
-    from notes.lib.settings import config
-except:
-    from lib.definitions import Note
-    from lib.misc import Color, Style, fontColor, fontReset
-    from lib.parseMarkdown import MarkdownParse
-    from lib.settings import config
+from notes.lib.definitions import Note
+from notes.lib.misc import Color, Style, fontColor, fontReset
+from notes.lib.parseMarkdown import MarkdownParse
+from notes.lib.settings import config
 
 
 def remove_suffix(string: str) -> str:

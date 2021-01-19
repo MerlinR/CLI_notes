@@ -42,7 +42,7 @@ $ notes
  (3)	 - notes.README
  (4)	 - pitopexercise.README
  (5)	 - ttcnotify.README
- (6)	 - yt_album_dl.README
+ (6)	 - ytalbumdl.README
 ```
 
 ### Reading notes
@@ -79,6 +79,12 @@ Note selection or [q]uit:
 Only requirement being [MDV](https://github.com/axiros/terminal_markdown_viewer)
 ```
 $ pip install -R requirements.txt
+```
+
+## Dev Running
+To run the script from git clone, locally use:
+```
+$ python3 -m notes.notes
 ```
 
 ## ToDo
