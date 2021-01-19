@@ -15,10 +15,15 @@ Notes offers basic arguments which also work positional to speed up workflow, th
     -h | --help                 The help menu
 
 ## Creating/Editing Note
+### Interactive alter
 ```
 $ notes -a bullet
  - bullet
 ...
+```
+### Append / instantly create note
+```
+$ notes -a bullet "Base Input"
 ```
 
 ## Listing notes
