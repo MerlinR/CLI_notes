@@ -7,7 +7,7 @@ the Markdown.
 
 ## Features
  - Add, Edit, Delete Notes
- - Notes are plaintext markdown with extending subfolders
+ - Notes are plaintext markdown within extending subfolders as project folders
  - List notes, all or from subfolder
  - extended notes list, list notes and their contents, all or from subfolders
  - Search notes, regex either by note name or it's contents, list all matches
@@ -29,6 +29,10 @@ Full examples of usage can be seen [here](Examples.md)
     -c | --config               Alter the configurations for CLI notes
     -h | --help                 The help menu
 
+
+## Configuration
+The configuration file for notes is stored under `$HOME`, such as `~/.notes/notes.cfg`
+The config files stores what markdown format to use and the notes directory path.
 
 ## Installation
 Notes requires `python3` for installation and can be installed via:
