@@ -172,7 +172,7 @@ def list_notes(note_list: list, list_contents: bool = False):
                 )
 
 
-def alter_note(alter_note: str, createDir = None):
+def alter_note(alter_note: str, createDir=None):
     title = alter_note
     if title.split(".")[-1] in config.get("markdown_extensions"):
         title = os.path.join(*title.split(".")[:-1])
@@ -207,10 +207,10 @@ def configure_config(configure: str):
     call(f"{config.get('editor')} {config.config_path}", shell=True)
 
 
-def delete_note(rm_note: str, deleteDir = None):
+def delete_note(rm_note: str, deleteDir=None):
     relevent_notes = search_note_by_name(rm_note)
     choice = False
-    
+
     if len(relevent_notes) > 1:
         list_notes(relevent_notes)
         options = [note.count_id for note in relevent_notes]
@@ -266,7 +266,11 @@ def parse_args() -> dict:
     )
 
     arguments.add_argument(
-        "--dir", dest="dirOption", action="store_true", default=None, help="creates directory as a project rather then MD file"
+        "--dir",
+        dest="dirOption",
+        action="store_true",
+        default=None,
+        help="creates directory as a project rather then MD file",
     )
 
     arguments.add_argument(
@@ -301,7 +305,7 @@ def parse_args() -> dict:
     )
 
     args = arguments.parse_args()
-    
+
     if args.dirOption and (args.alter is None and args.delete is None):
         print("--dir only used in conjuction with --alter to create a project dir")
         sys.exit()
