@@ -38,7 +38,7 @@ The config files stores what markdown format to use and the notes directory path
 The `notes_location` is the location's the script searches for notes to display, the path can be one or multiple paths seperated by a comma; example: `/home/merlin/.notes/,/home/merlin/workspace/python`
 Only the first path supplied is used when creating new notes.
 
-## Color Scheme
+### Color Scheme
 The color scheme is controlled by MDV and can be configured within the configuration file, the `color_scheme` id list can be found [here](https://github.com/axiros/terminal_markdown_viewer/blob/master/mdv/ansi_tables.json).
 
 ## Installation
