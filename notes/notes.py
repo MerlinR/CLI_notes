@@ -271,7 +271,8 @@ def parse_args() -> dict:
         "-ll",
         "--sub-list",
         dest="sublist",
-        action="store_true",
+        nargs="?",
+        const=True,
         help="list notes and titles",
     )
     arguments.add_argument(
@@ -318,7 +319,10 @@ def main():
     elif arguments.list:
         list_notes(get_note_list())
     elif arguments.sublist:
-        list_notes(get_note_list(), list_contents=True)
+        if arguments.sublist == True:
+            list_notes(get_note_list(), list_contents=True)
+        else:
+            list_notes(search_note_by_name(arguments.sublist), list_contents=True)
     elif arguments.search:
         search_note(arguments.search)
     elif arguments.dsearch:

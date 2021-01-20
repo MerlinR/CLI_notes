@@ -81,3 +81,44 @@ No matching note called: this
     36: The simple script requires a URL to alter, for this initially search TTC for the item. Copy the URL into the
 ```
 
+## Viewing Note's Contents
+
+### Viewing all contents
+```
+$ notes -ll
+ (20)	 - pitopexercise.README
+  Pi-Top Monitor Exercise
+    Time
+    Installation
+    To-Do
+ (21)	 - ttcnotify.README
+  TTCNotifier
+    ToDo
+    Requirements
+    Usage
+    Example
+ (22)	 - yt_album_dl.README
+  Youtube Album splitter
+    Core Features
+    Install guide
+    Options
+    Req
+    Tests
+    To-Do
+    Bugs
+...
+```
+### Viewing Contents list of specific Note
+```
+$ notes -ll
+(15)	 - bullet.README
+  bullet - cli
+    Format
+    Options
+    ToDo
+    Wishlist
+      LongTerm
+      Fat chance
+    UI Prototype
+...
+```
