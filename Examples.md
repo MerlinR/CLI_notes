@@ -72,7 +72,26 @@ $ notes a
 Please select a note: [1, 2, 3, 4, 14, 18]
 Note selection or [q]uit:
 ```
+### Searching Note for content
+```
+$ notes bullet req
+ (15)	 - bullet.README
+    65: - Pre-req bullets
+```
 ### Searching by Content
+#### Specific search
+```
+$ notes -ds requi
+ (16)	 - magnetToTorrent.README
+    13: Magnet link is a required argument for the magnet link.
+ (17)	 - notes.Examples
+    81:     36: The simple script requires a URL to alter, for this initially search TTC for the item. Copy the URL into the
+ (19)	 - notes.README
+    45: Notes requires `python3` for installation and can be installed via:
+    51: Only requirement being [MDV](https://github.com/axiros/terminal_markdown_viewer)
+    53: $ pip3 install -R requirements.txt
+```
+#### Auto searches when viewing if no note matches
 ```
 $ notes this
 No matching note called: this

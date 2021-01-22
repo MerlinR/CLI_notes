@@ -17,9 +17,15 @@ def remove_suffix(string: str) -> str:
     return os.path.splitext(string)[0]
 
 
-def note_selection(msg: str, options: list) -> int:
-    if msg:
-        print(msg)
+def note_selection(note_list: List[Note]) -> Note:
+    if len(note_list) == 1:
+        return note_list[0]
+    elif len(note_list) == 0:
+        return None
+
+    list_notes(note_list)
+    options = [note.count_id for note in note_list]
+    print(f"Pleae Select Note: {options}")
 
     option = None
     while option not in options:
@@ -32,8 +38,8 @@ def note_selection(msg: str, options: list) -> int:
             sys.exit(1)
         if option not in options:
             print(f"\n Invalid Option. {msg}")
-
-    return option
+    
+    return [note for note in note_list if note.count_id == option][0] if option else None
 
 
 def confirm_choice(msg: Optional[str] = False) -> bool:
@@ -98,17 +104,12 @@ def view_note(view_note: str):
     else:
         relevent_notes = search_note_by_name(view_note)
     found_note = None
+
     if not relevent_notes:
         print(f"No matching note called or containing: {view_note}")
         deep_search_within_note(view_note)
-    elif len(relevent_notes) == 1:
-        found_note = relevent_notes[0]
     else:
-        list_notes(relevent_notes)
-        options = [note.count_id for note in relevent_notes]
-        choice = note_selection(f"Please select a note: {options}", options)
-
-        found_note = [note for note in relevent_notes if note.count_id == choice][0]
+        found_note = note_selection(relevent_notes)
 
     if found_note:
         MarkdownParse(found_note).print()
@@ -197,22 +198,18 @@ def configure_config(configure: str):
 
 def delete_note(rm_note: str, deleteDir: bool = False, confirm: bool = True):
     relevent_notes = search_note_by_name(rm_note)
-    choice = False
 
-    if len(relevent_notes) > 1:
-        list_notes(relevent_notes)
-        options = [note.count_id for note in relevent_notes]
-        choice = note_selection(f"Please select a note: {options}", options)
-    elif not confirm or confirm_choice("Do you wish to delete {}".format(relevent_notes[0].min_path)):
+    choice = note_selection(relevent_notes)
+
+    if choice and confirm and confirm_choice("Do you wish to delete {}".format(relevent_notes[0].min_path)):
         choice = relevent_notes[0].count_id
     elif not choice:
         print(f"Not deleting: {rm_note}")
         return
 
-    note = [note for note in relevent_notes if note.count_id == choice][0]
     try:
-        os.remove(note.path)
-        print(f"Deleted {note.min_path}")
+        os.remove(choice.path)
+        print(f"Deleted {choice.min_path}")
     except:
         print("Could not delete")
 
@@ -222,11 +219,14 @@ def search_note(search_note: str):
     list_notes(relevent_notes, list_contents=True)
 
 
-def deep_search_for_text(text: str) -> List[Note]:
-    notes = get_note_list()
+def deep_search_for_text(text: str, search_note: Note = None) -> List[Note]:
+    if search_note:
+        notes = [ search_note ]
+    else:
+        notes = get_note_list()
+
     regObj = re.compile(f".*{text}.*")
     relevent_notes = []
-
     for note in notes:
         found_match = False
         with open(note.path) as f:
@@ -239,6 +239,7 @@ def deep_search_for_text(text: str) -> List[Note]:
 
     return relevent_notes
 
+
 def deep_search_within_note(search_text: str):
     list_notes(deep_search_for_text(search_text))
 
@@ -249,7 +250,7 @@ def parse_args() -> dict:
     )
 
     arguments.add_argument(
-        dest="view", nargs="?", type=str, help="View specific note, will do a search"
+        dest="view", nargs="*", default=None, type=str, help="View specific note, will do a search"
     )
 
     arguments.add_argument(
@@ -310,8 +311,10 @@ def parse_args() -> dict:
 def main():
     arguments = parse_args()
 
-    if arguments.view:
-        view_note(arguments.view)
+    if len(arguments.view) == 1:
+        view_note(arguments.view[0])
+    elif len(arguments.view) > 1:
+        list_notes(deep_search_for_text(arguments.view[1], note_selection(search_note_by_name(arguments.view[0]))))
     elif arguments.alter:
         alter_note(arguments.alter, arguments.dirOption)
     elif arguments.delete:
