@@ -151,11 +151,8 @@ def list_notes(note_list: list, list_contents: bool = False):
                     + f"{fontColor(setcolor = Color.YELLOW)}{content.title}{fontReset()}"
                 )
         if note.extra_info:
-            for line in note.extra_info.splitlines():
-                print(
-                    "  " * (note_indent + 1)
-                    + f"{fontColor(setcolor = Color.RED)}{line}{fontReset()}"
-                )
+            for line in note.extra_info:
+                print("-------------------\n" + f"{fontColor(setcolor = Color.RED)}{line}{fontReset()}")
 
 
 def alter_note(alter_note: List[str], createDir: bool = False):
@@ -224,20 +221,8 @@ def deep_search_for_text(text: str, search_note: Note = None) -> List[Note]:
         notes = [ search_note ]
     else:
         notes = get_note_list()
-
-    regObj = re.compile(f".*{text}.*")
-    relevent_notes = []
-    for note in notes:
-        found_match = False
-        with open(note.path) as f:
-            for indx, line in enumerate(f):
-                if regObj.match(line):
-                    note.extra_info = note.extra_info + f"{indx+1}: {line}"
-                    found_match = True
-        if found_match:
-            relevent_notes.append(note)
-
-    return relevent_notes
+    
+    return [ note for note in notes if note.text_search(text) ] 
 
 
 def deep_search_within_note(search_text: str):

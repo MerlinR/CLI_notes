@@ -2,7 +2,7 @@
 from configparser import ConfigParser
 from os import makedirs, path
 from shutil import which
-from typing import Optional
+from typing import List, Optional
 
 DEFAULT_LOC = path.join(path.expanduser("~"), ".notes")
 CONFIG_FILE_NAME = path.join(DEFAULT_LOC, "notes.cfg")
@@ -13,6 +13,8 @@ DEFAULT_CONFIG = {
     "view-mode": "combo",
     "extension": "md",
     "color_scheme": "637.2829",
+    "search_n_lines_up": 1,
+    "search_n_lines_down": 1,
 }
 
 MARKDOWN_EXTENSIONS = (
@@ -102,6 +104,20 @@ class Settings:
             return options[0]
         else:
             return view_mode
+    
+    def _validate_lines(self, lines: List[int]) -> List[int]:
+        newLines = [ ]
+        for line in range(len(lines)):
+            if line > 0 and line < 5:
+                newLines.append(line)
+            else:
+                newLines.append(1)
+        if len(newLines) < 2:
+            newLines.append(1)
+        
+        return newLines[:2]
+
+
 
     def _validate_extension(self, extension: str) -> str:
         if extension[:1] == ".":

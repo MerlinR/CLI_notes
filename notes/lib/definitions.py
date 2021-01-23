@@ -21,7 +21,7 @@ class Note():
     name: str = ""
     min_path: str = ""
     content_list: List[Contents] = None
-    extra_info: str = ""
+    extra_info: list = []
     count_id: int = -1
     id: str = None
 
@@ -47,4 +47,15 @@ class Note():
                         self.content_list.append(Contents(line.replace("#", "").strip(), level))
 
         return self.content_list
+
+    def text_search(self, substring: str) -> extra_info: 
+        if self.extra_info:
+            return self.extra_info
+        matches = []
+        regex_str = "((?:.*\n){" + config.get('search_n_lines_up')  + "}.*" + substring + ".*" + "(?:.*\n){" + config.get('search_n_lines_down')  + "})"
+        with open(self.path) as note_file:
+            matches = re.findall(regex_str, note_file.read())
+        
+        self.extra_info = matches
+        return self.extra_info
 

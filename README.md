@@ -60,7 +60,7 @@ $ python3 -m notes.notes
 ```
 
 ## ToDo
- - Unit Tests
+ - Unit Tests (more)
  - search by Shiet note ID 
  - Ability to delete dir
 

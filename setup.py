@@ -9,7 +9,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="notes-cli",
-    version="0.1",
+    version="1.0",
     author="Merlin Roe",
     author_email="merlin.roe@hotmail.co.uk",
     description="A basic CLI notes tool using Markdown",

@@ -67,18 +67,6 @@ class TestStringMethods(unittest.TestCase):
             self.fail("Found list expected to be single: {}".format(found_list))
         self.assertNote(expected_note, found_list[0])
     
-    def test_deep_search(self):
-        expected_note = Note(
-            path = f"{self.test_dir}/{TEST_NAME}.md",
-        )
-        expected_note.extra_info = f"1: #{TEST_NAME}\n2: {TEST_MSG}"
-
-        found_list = deep_search_for_text(TEST_NAME)
-
-        if len(found_list) > 1:
-            self.fail("Found list expected to be single: {}".format(found_list))
-        self.assertNote(expected_note, found_list[0])
-    
     # unit tests run after sort, therefore x ensures runs last
     def test_x_deletion(self):
         delete_note(TEST_NAME, confirm = False)
