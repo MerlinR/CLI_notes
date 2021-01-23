@@ -55,17 +55,17 @@ class Note:
             return self.extra_info
         matches = []
         regex_str = (
-            "((?:.*\n){"
+            "((?:.*\n){0,"
             + config.get("search_n_lines_up")
             + "}.*"
             + substring
             + ".*"
-            + "(?:.*\n){"
+            + "(?:.*\n){0,"
             + config.get("search_n_lines_down")
             + "})"
         )
         with open(self.path) as note_file:
-            matches = re.findall(regex_str, note_file.read())
+            matches = re.findall(regex_str, note_file.read(), flags=re.IGNORECASE)
 
         self.extra_info = matches
         return self.extra_info

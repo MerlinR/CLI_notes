@@ -70,7 +70,20 @@ class TestStringMethods(unittest.TestCase):
         )
         found_list = search_note_by_name(TEST_NAME)
 
-        if len(found_list) > 1:
+        if len(found_list) > 1 or len(found_list) == 0:
+            self.fail("Found list expected to be single: {}".format(found_list))
+        self.assertNote(expected_note, found_list[0])
+
+
+    def test_deep_search(self):
+        expected_note = Note(
+            path = f"{self.test_dir}/{TEST_NAME}.md",
+        )
+        expected_note.extra_info = [f"#{TEST_NAME}\n{TEST_MSG}"]
+
+        found_list = deep_search_for_text(TEST_NAME)
+ 
+        if len(found_list) > 1 or len(found_list) == 0:
             self.fail("Found list expected to be single: {}".format(found_list))
         self.assertNote(expected_note, found_list[0])
 
