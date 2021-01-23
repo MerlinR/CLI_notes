@@ -1,12 +1,13 @@
 #!/usr/bin/python3
-import unittest
 import os
 import shutil
 import tempfile
-from notes.lib.settings import config
-from notes.notes import alter_note, get_note_list, search_note_by_name, deep_search_for_text, delete_note
-from notes.lib.definitions import Note
+import unittest
 
+from notes.lib.definitions import Note
+from notes.lib.settings import config
+from notes.notes import (alter_note, deep_search_for_text, delete_note,
+                         get_note_list, search_note_by_name)
 
 TEST_NAME = "Test"
 TEST_MSG = "Test Message"
@@ -14,18 +15,19 @@ TEST_MSG = "Test Message"
 TEST_NAME2 = "Tast"
 TEST_MSG2 = "Tast Message"
 
+
 class TestStringMethods(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.test_dir = tempfile.mkdtemp()
-        config.set("note_paths", [ cls.test_dir ])
+        config.set("note_paths", [cls.test_dir])
         config.set("primary_note_dir", cls.test_dir)
         config.set("extension", "md")
 
     @classmethod
     def tearDownClass(cls):
         shutil.rmtree(cls.test_dir)
-   
+
     def assertNote(self, orig: Note, expected: Note):
         if orig.path != expected.path:
             self.fail("{} Does not match {}".format(orig.path, expected.path))
@@ -36,43 +38,51 @@ class TestStringMethods(unittest.TestCase):
         elif orig.id != expected.id:
             self.fail("{} Does not match {}".format(orig.id, expected.id))
         elif orig.extra_info != expected.extra_info:
-            self.fail("{} Does not match {}".format(orig.extra_info, expected.extra_info))
-
+            self.fail(
+                "{} Does not match {}".format(orig.extra_info, expected.extra_info)
+            )
 
     def test_alter(self):
         alter_note([TEST_NAME, TEST_MSG])
         alter_note([TEST_NAME2, TEST_MSG2])
-        self.assertTrue(os.path.exists(os.path.join(self.test_dir, f"{TEST_NAME}.{config.get('extension')}")))
+        self.assertTrue(
+            os.path.exists(
+                os.path.join(self.test_dir, f"{TEST_NAME}.{config.get('extension')}")
+            )
+        )
 
     def test_get_note_list(self):
         expected_list = [
             Note(
-                path = f"{self.test_dir}/{TEST_NAME2}.md",
+                path=f"{self.test_dir}/{TEST_NAME2}.md",
             ),
             Note(
-                path = f"{self.test_dir}/{TEST_NAME}.md",
+                path=f"{self.test_dir}/{TEST_NAME}.md",
             ),
         ]
 
         for indx, note in enumerate(get_note_list()):
             self.assertNote(note, expected_list[indx])
-    
+
     def test_search_by_name(self):
         expected_note = Note(
-            path = f"{self.test_dir}/{TEST_NAME}.md",
+            path=f"{self.test_dir}/{TEST_NAME}.md",
         )
         found_list = search_note_by_name(TEST_NAME)
-        
+
         if len(found_list) > 1:
             self.fail("Found list expected to be single: {}".format(found_list))
         self.assertNote(expected_note, found_list[0])
-    
+
     # unit tests run after sort, therefore x ensures runs last
     def test_x_deletion(self):
-        delete_note(TEST_NAME, confirm = False)
-        self.assertFalse(os.path.exists(os.path.join(self.test_dir, f"{TEST_NAME}.{config.get('extension')}")))
-         
+        delete_note(TEST_NAME, confirm=False)
+        self.assertFalse(
+            os.path.exists(
+                os.path.join(self.test_dir, f"{TEST_NAME}.{config.get('extension')}")
+            )
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

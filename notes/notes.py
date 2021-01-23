@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 import argparse
 import os
-import sys
 import re
+import sys
 from pathlib import Path
 from subprocess import call
 from typing import List, Optional
@@ -38,8 +38,10 @@ def note_selection(note_list: List[Note]) -> Note:
             sys.exit(1)
         if option not in options:
             print(f"\n Invalid Option. {msg}")
-    
-    return [note for note in note_list if note.count_id == option][0] if option else None
+
+    return (
+        [note for note in note_list if note.count_id == option][0] if option else None
+    )
 
 
 def confirm_choice(msg: Optional[str] = False) -> bool:
@@ -69,12 +71,12 @@ def get_note_list() -> list:
                 dir_list.append(
                     Note(
                         os.path.join(cur_path, f"{item}.{config.get('extension')}"),
-                        indent = indent,
+                        indent=indent,
                     )
                 )
             elif item.endswith(config.get("markdown_extensions")):
                 # Note Only
-                dir_list.append(Note(os.path.join(cur_path, item), indent = indent))
+                dir_list.append(Note(os.path.join(cur_path, item), indent=indent))
 
             if os.path.isdir(os.path.join(cur_path, item)):
                 search_all_notes(
@@ -152,7 +154,10 @@ def list_notes(note_list: list, list_contents: bool = False):
                 )
         if note.extra_info:
             for line in note.extra_info:
-                print("-------------------\n" + f"{fontColor(setcolor = Color.RED)}{line}{fontReset()}")
+                print(
+                    "-------------------\n"
+                    + f"{fontColor(setcolor = Color.RED)}{line}{fontReset()}"
+                )
 
 
 def alter_note(alter_note: List[str], createDir: bool = False):
@@ -198,7 +203,13 @@ def delete_note(rm_note: str, deleteDir: bool = False, confirm: bool = True):
 
     choice = note_selection(relevent_notes)
 
-    if choice and confirm and confirm_choice("Do you wish to delete {}".format(relevent_notes[0].min_path)):
+    if (
+        choice
+        and confirm
+        and confirm_choice(
+            "Do you wish to delete {}".format(relevent_notes[0].min_path)
+        )
+    ):
         choice = relevent_notes[0].count_id
     elif not choice:
         print(f"Not deleting: {rm_note}")
@@ -218,11 +229,11 @@ def search_note(search_note: str):
 
 def deep_search_for_text(text: str, search_note: Note = None) -> List[Note]:
     if search_note:
-        notes = [ search_note ]
+        notes = [search_note]
     else:
         notes = get_note_list()
-    
-    return [ note for note in notes if note.text_search(text) ] 
+
+    return [note for note in notes if note.text_search(text)]
 
 
 def deep_search_within_note(search_text: str):
@@ -235,7 +246,11 @@ def parse_args() -> dict:
     )
 
     arguments.add_argument(
-        dest="view", nargs="*", default=None, type=str, help="View specific note, will do a search"
+        dest="view",
+        nargs="*",
+        default=None,
+        type=str,
+        help="View specific note, will do a search",
     )
 
     arguments.add_argument(
@@ -299,7 +314,12 @@ def main():
     if len(arguments.view) == 1:
         view_note(arguments.view[0])
     elif len(arguments.view) > 1:
-        list_notes(deep_search_for_text(arguments.view[1], note_selection(search_note_by_name(arguments.view[0]))))
+        list_notes(
+            deep_search_for_text(
+                arguments.view[1],
+                note_selection(search_note_by_name(arguments.view[0])),
+            )
+        )
     elif arguments.alter:
         alter_note(arguments.alter, arguments.dirOption)
     elif arguments.delete:

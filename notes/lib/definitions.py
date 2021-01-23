@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
+import hashlib
 import os
 import re
-import hashlib
 from dataclasses import dataclass
 from typing import List
 
@@ -15,7 +15,7 @@ class Contents:
     indent: int
 
 
-class Note():
+class Note:
     path: str = ""
     indent: int = 0
     name: str = ""
@@ -25,7 +25,7 @@ class Note():
     count_id: int = -1
     id: str = None
 
-    def __init__(self, path, indent = 0):
+    def __init__(self, path, indent=0):
         self.path = path
         self.id = hashlib.sha1(self.path.encode("utf-8")).hexdigest()[:6]
         for path in config.get("note_paths"):
@@ -33,8 +33,8 @@ class Note():
                 self.min_path = (os.path.relpath(self.path, path)).replace("/", ".")
         self.name = os.path.splitext(os.path.basename(self.path))[0]
         self.indent = indent
-    
-    @property 
+
+    @property
     def contents(self) -> List[Contents]:
         regObj = re.compile(f"^\s*#+.*")
 
@@ -44,18 +44,28 @@ class Note():
                 for line in note_file:
                     if regObj.match(line):
                         level = line.count("#")
-                        self.content_list.append(Contents(line.replace("#", "").strip(), level))
+                        self.content_list.append(
+                            Contents(line.replace("#", "").strip(), level)
+                        )
 
         return self.content_list
 
-    def text_search(self, substring: str) -> extra_info: 
+    def text_search(self, substring: str) -> extra_info:
         if self.extra_info:
             return self.extra_info
         matches = []
-        regex_str = "((?:.*\n){" + config.get('search_n_lines_up')  + "}.*" + substring + ".*" + "(?:.*\n){" + config.get('search_n_lines_down')  + "})"
+        regex_str = (
+            "((?:.*\n){"
+            + config.get("search_n_lines_up")
+            + "}.*"
+            + substring
+            + ".*"
+            + "(?:.*\n){"
+            + config.get("search_n_lines_down")
+            + "})"
+        )
         with open(self.path) as note_file:
             matches = re.findall(regex_str, note_file.read())
-        
+
         self.extra_info = matches
         return self.extra_info
-

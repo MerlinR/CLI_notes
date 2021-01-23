@@ -104,9 +104,9 @@ class Settings:
             return options[0]
         else:
             return view_mode
-    
+
     def _validate_lines(self, lines: List[int]) -> List[int]:
-        newLines = [ ]
+        newLines = []
         for line in range(len(lines)):
             if line > 0 and line < 5:
                 newLines.append(line)
@@ -114,10 +114,8 @@ class Settings:
                 newLines.append(1)
         if len(newLines) < 2:
             newLines.append(1)
-        
+
         return newLines[:2]
-
-
 
     def _validate_extension(self, extension: str) -> str:
         if extension[:1] == ".":
@@ -132,7 +130,7 @@ class Settings:
             return self._config[key]
         else:
             return self._extra.get(key)
-    
+
     def set(self, key: str, value: str):
         if self._config.get(key):
             self._config[key] = value
