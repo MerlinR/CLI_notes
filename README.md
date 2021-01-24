@@ -61,6 +61,7 @@ $ python3 -m notes.notes
 
 ## ToDo
  - Unit Tests (more)
+ - Easier edit (Split alter and edit, so edit searches for relevent note)
  - search by Shiet note ID 
  - Ability to delete dir
 

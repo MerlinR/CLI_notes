@@ -66,6 +66,7 @@ class Note:
         )
         with open(self.path) as note_file:
             matches = re.findall(regex_str, note_file.read(), flags=re.IGNORECASE)
-
-        self.extra_info = matches
+        
+        # Remove the markdown code tags (```)
+        self.extra_info = [match.replace('```\n', '') for match in matches]
         return self.extra_info
