@@ -203,7 +203,11 @@ def delete_note(rm_note: str, deleteDir: bool = False, confirm: bool = True):
 
     choice = note_selection(relevent_notes)
 
-    if (choice and confirm and confirm_choice("Do you wish to delete {}".format(choice.min_path))):
+    if (
+        choice
+        and confirm
+        and confirm_choice("Do you wish to delete {}".format(choice.min_path))
+    ):
         try:
             os.remove(choice.path)
             print(f"Deleted {choice.min_path}")
@@ -212,7 +216,6 @@ def delete_note(rm_note: str, deleteDir: bool = False, confirm: bool = True):
     else:
         print(f"Not deleting: {choice.min_path}")
         return
-
 
 
 def search_note(search_note: str):
