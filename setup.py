@@ -1,15 +1,16 @@
 #!/usr/bin/python3
 import os
 import subprocess
-
 import setuptools
+
+from notes.notes import _version
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name="notes-cli",
-    version="1.0",
+    version=_version,
     author="Merlin Roe",
     author_email="merlin.roe@hotmail.co.uk",
     description="A basic CLI notes tool using Markdown",

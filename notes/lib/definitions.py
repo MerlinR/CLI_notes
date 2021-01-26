@@ -27,7 +27,7 @@ class Note:
 
     def __init__(self, path, indent=0):
         self.path = path
-        self.id = hashlib.sha1(self.path.encode("utf-8")).hexdigest()[:6]
+        self.id = hashlib.sha1(self.path.encode("utf-8")).hexdigest()[:3]
         for path in config.get("note_paths"):
             if path in self.path:
                 self.min_path = (os.path.relpath(self.path, path)).replace("/", ".")

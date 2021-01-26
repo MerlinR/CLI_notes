@@ -44,7 +44,7 @@ class TestStringMethods(unittest.TestCase):
 
     def test_add(self):
         add_note(TEST_NAME, TEST_MSG)
-        add_note(TEST_NAME, no_edit = True)
+        add_note(TEST_NAME, no_edit=True)
         add_note(TEST_NAME2, TEST_MSG2)
         self.assertTrue(
             os.path.exists(

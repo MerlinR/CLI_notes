@@ -22,25 +22,19 @@ Full examples of usage can be seen [here](Examples.md)
 ### Options
 
 ```
-positional arguments:
-  {v,add,edit,rm,ls,ds,config}
-                        Action sub-command help
-    v                   View Note
-    add                 Add new Notes
-        note_name           New Note Name
-        note_text           Quickly add Note text
-
-    edit                Edit Notes
-    rm                  Delete Note
-
-    ls                  List Notes
-        substring            search title substring
-        -c, --list-contents  List the contents of Notes
-
-    ds                  Search in Notes
-        substring            search title substring
-        -c, --list-contents  List the contents of Notes
-    config              Change config file
+ - view                     View Note
+ - add                      Add new Notes
+    - note_name             -New Note Name
+    - note_text             -Quickly add Note text
+ - edit                     Edit Notes
+ - rm                       Delete Note
+ - ls                       List Notes
+    - substring             -search title substring
+    -c, --list-contents     -List the contents of Notes
+ - ds                       Search in Notes
+        substring           -search title substring
+        -c, --list-contents -List the contents of Notes
+ - config                   Change config file
 ```
 
 ## Configuration
@@ -87,15 +81,12 @@ $ python3 -m notes.notes
 - Redo Args
   - Add "mv" note
 - Add Auto-complete (mainly make editing easier)
-  - Ensure Edit, rm, search take Count_id / Shiet_id as inputs
-- search by Shiet note ID
-- Ability to delete dir
-- Store details in MD? (ID, Date, Tags)
+- Ensure Edit, rm, search take Count_id as inputs
+- Ability to delete entire dir
+- Configure option to allow single config change rather the open file
 
 ### Wishlist
 
 - Markdown color customisation (Allow custom json color scheme)
 - Dynamic notes (runs commands to import into note, E.G "ls", "ip a", etc
-- Configure option to allow single config change rather the open file
 - notes links to other notes - Maybe possible with MDV changes or swiching to MAN pages, BIG wish
-- Flat pack notes? (compress)

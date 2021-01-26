@@ -12,7 +12,7 @@ from notes.lib.misc import Color, Style, fontColor, fontReset
 from notes.lib.parseMarkdown import MarkdownParse
 from notes.lib.settings import config
 
-VERSION = 1.0
+_version = 1.0
 
 
 def remove_suffix(string: str) -> str:
@@ -91,10 +91,6 @@ def get_note_list() -> list:
     notes = []
     for note_path in config.get("note_paths"):
         notes.extend(search_all_notes(note_path, dir_list=[]))
-    # Easier way to get all MD files, although order is not as pleased
-    # result = list(Path(config["note_paths"][0]).rglob(f"*.{config['extension']}"))
-    # for found in sorted(result):
-    #    notes.append(Note(str(found)))
 
     count = 1
     for note in notes:
@@ -162,7 +158,7 @@ def list_notes(note_list: list, list_contents: bool = False):
                 )
 
 
-def add_note(note_name: str, note_msg: str = "", no_edit = False):
+def add_note(note_name: str, note_msg: str = "", no_edit=False):
     title = note_name
 
     if title.split(".")[-1] in config.get("markdown_extensions"):
@@ -197,10 +193,6 @@ def edit_note(edit_note: str):
     note = note_selection(relevent_notes)
 
     call(f"{config.get('editor')} {note.path}", shell=True)
-
-
-def configure_config():
-    call(f"{config.get('editor')} {config.config_path}", shell=True)
 
 
 def delete_note(rm_note: str, confirm: bool = True):
@@ -242,15 +234,20 @@ def deep_search_within_note(search_text: str, search_note_name: str = None):
         list_notes(deep_search_for_text(search_text))
 
 
+def configure_config():
+    call(f"{config.get('editor')} {config.config_path}", shell=True)
+
+
 def parse_args() -> dict:
     arguments = argparse.ArgumentParser(
         description="Notes. Simple cli tool for creating and managing markdown notes."
     )
+
     subparsers = arguments.add_subparsers(help="Action sub-command help")
     arguments.add_argument("--version", action="version", version=f"%(prog)s {VERSION}")
 
     # View
-    viewParser = subparsers.add_parser("v", help="View Note")
+    viewParser = subparsers.add_parser("view", help="View Note")
     viewParser.add_argument("-v", dest="view", default=True, help=argparse.SUPPRESS)
     viewParser.add_argument("substring", type=str, help="Note name/substring")
 
