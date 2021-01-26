@@ -12,6 +12,8 @@ from notes.lib.misc import Color, Style, fontColor, fontReset
 from notes.lib.parseMarkdown import MarkdownParse
 from notes.lib.settings import config
 
+VERSION = 1.0
+
 
 def remove_suffix(string: str) -> str:
     return os.path.splitext(string)[0]
@@ -118,10 +120,12 @@ def view_note(view_note: str):
         MarkdownParse(found_note).print()
 
 
-def search_note_by_name(name: str) -> list:
-    notes = get_note_list()
+def search_note_by_name(name: str, notes: List[Note] = None) -> list:
+    if not notes:
+        notes = get_note_list()
     relevent_notes = []
     regObj = re.compile(f".*{name}.*")
+
     for note in notes:
         if regObj.match(str(note.min_path)):
             relevent_notes.append(note)
@@ -132,6 +136,8 @@ def search_note_by_name(name: str) -> list:
 
 
 def list_notes(note_list: list, list_contents: bool = False):
+    if len(note_list) == 0:
+        print("No relevent Notes")
     for note in note_list:
 
         print(
@@ -156,8 +162,9 @@ def list_notes(note_list: list, list_contents: bool = False):
                 )
 
 
-def alter_note(alter_note: List[str], createDir: bool = False):
-    title = alter_note[0]
+def add_note(note_name: str, note_msg: str = "", no_edit = False):
+    title = note_name
+
     if title.split(".")[-1] in config.get("markdown_extensions"):
         title = os.path.join(*title.split(".")[:-1])
 
@@ -169,12 +176,7 @@ def alter_note(alter_note: List[str], createDir: bool = False):
         )
     )
 
-    if createDir:
-        newPath = f"{remove_suffix(note.path)}"
-        if os.path.exists(newPath) is False:
-            os.makedirs(newPath)
-        return
-    elif os.path.exists(os.path.dirname(note.path)) is False:
+    if os.path.exists(os.path.dirname(note.path)) is False:
         if confirm_choice(f"Create note path {os.path.dirname(note.path)}?"):
             os.makedirs(os.path.dirname(note.path))
         else:
@@ -182,20 +184,30 @@ def alter_note(alter_note: List[str], createDir: bool = False):
 
     if os.path.isfile(note.path) is False:
         with open(note.path, "w") as note_file:
-            note_file.write(f"#{note.name}\n")
-    try:
-        with open(note.path, "a") as note_file:
-            note_file.write(alter_note[1])
-    except:
+            note_file.write(f"# {note.name}\n{note_msg}")
+    else:
+        print("Note already exists, editing")
+    if not note_msg and not no_edit:
         call(f"{config.get('editor')} {note.path}", shell=True)
 
 
-def configure_config(configure: str):
+def edit_note(edit_note: str):
+    relevent_notes = search_note_by_name(edit_note)
+
+    note = note_selection(relevent_notes)
+
+    call(f"{config.get('editor')} {note.path}", shell=True)
+
+
+def configure_config():
     call(f"{config.get('editor')} {config.config_path}", shell=True)
 
 
-def delete_note(rm_note: str, deleteDir: bool = False, confirm: bool = True):
+def delete_note(rm_note: str, confirm: bool = True):
     relevent_notes = search_note_by_name(rm_note)
+    if not relevent_notes:
+        print(f"No matches")
+        return
 
     choice = note_selection(relevent_notes)
 
@@ -212,88 +224,97 @@ def delete_note(rm_note: str, deleteDir: bool = False, confirm: bool = True):
         return
 
 
-def search_note(search_note: str):
+def search_note(search_note: str, list_contents=False):
     relevent_notes = search_note_by_name(search_note)
-    list_notes(relevent_notes, list_contents=True)
+    list_notes(relevent_notes, list_contents=list_contents)
 
 
-def deep_search_for_text(text: str, search_note: Note = None) -> List[Note]:
-    if search_note:
-        notes = [search_note]
+def deep_search_for_text(text: str) -> List[Note]:
+    return [note for note in get_note_list() if note.text_search(text)]
+
+
+def deep_search_within_note(search_text: str, search_note_name: str = None):
+    if search_note_name:
+        list_notes(
+            search_note_by_name(search_note_name, deep_search_for_text(search_text))
+        )
     else:
-        notes = get_note_list()
-
-    return [note for note in notes if note.text_search(text)]
-
-
-def deep_search_within_note(search_text: str):
-    list_notes(deep_search_for_text(search_text))
+        list_notes(deep_search_for_text(search_text))
 
 
 def parse_args() -> dict:
     arguments = argparse.ArgumentParser(
         description="Notes. Simple cli tool for creating and managing markdown notes."
     )
+    subparsers = arguments.add_subparsers(help="Action sub-command help")
+    arguments.add_argument("--version", action="version", version=f"%(prog)s {VERSION}")
 
-    arguments.add_argument(
-        dest="view",
-        nargs="*",
-        default=None,
-        type=str,
-        help="View specific note, will do a search",
-    )
+    # View
+    viewParser = subparsers.add_parser("v", help="View Note")
+    viewParser.add_argument("-v", dest="view", default=True, help=argparse.SUPPRESS)
+    viewParser.add_argument("substring", type=str, help="Note name/substring")
 
-    arguments.add_argument(
-        "-a", "--alter", dest="alter", nargs="+", type=str, help="Add/Edit note"
-    )
-
-    arguments.add_argument(
-        "--dir",
-        dest="dirOption",
-        action="store_true",
-        default=None,
-        help="creates directory as a project rather then MD file",
+    # Add
+    addNoteparser = subparsers.add_parser("add", help="Add new Notes")
+    addNoteparser.add_argument("-n", dest="add", default=True, help=argparse.SUPPRESS)
+    addNoteparser.add_argument("note_name", type=str, help="New Note Name")
+    addNoteparser.add_argument(
+        "note_text", type=str, default="", help="Quickly add Note text"
     )
 
-    arguments.add_argument(
-        "-l", "--list", dest="list", action="store_true", help="list notes"
+    # Edit
+    addNoteparser = subparsers.add_parser("edit", help="Edit Notes")
+    addNoteparser.add_argument("-n", dest="edit", default=True, help=argparse.SUPPRESS)
+    addNoteparser.add_argument("note_name", type=str, help="Note Name")
+
+    # Delete
+    deleteParser = subparsers.add_parser("rm", help="Delete Note")
+    deleteParser.add_argument(
+        "-rm", dest="delete", default=True, help=argparse.SUPPRESS
     )
-    arguments.add_argument(
-        "-ll",
-        "--sub-list",
-        dest="sublist",
-        nargs="?",
-        const=True,
-        help="list notes and titles",
+    deleteParser.add_argument("note_name", type=str, help="Note name/substring")
+
+    # List
+    listparser = subparsers.add_parser("ls", help="List Notes")
+    listparser.add_argument("-ls", dest="list", default=True, help=argparse.SUPPRESS)
+    listparser.add_argument(
+        "substring", type=str, nargs="?", default="", help="search title substring"
     )
-    arguments.add_argument(
-        "-d", "--delete", dest="delete", type=str, help="Delete note"
-    )
-    arguments.add_argument(
-        "-s", "--search", dest="search", type=str, help="Search for note by title"
-    )
-    arguments.add_argument(
-        "-ds",
-        "--deep-search",
-        dest="dsearch",
-        type=str,
-        help="Search for note by content",
-    )
-    arguments.add_argument(
+    listparser.add_argument(
         "-c",
-        "--configure",
-        dest="configure",
+        "--list-contents",
+        dest="contents",
         action="store_true",
-        help="Change the configurations",
+        default=False,
+        help="List the contents of Notes",
+    )
+
+    # Deepsearch
+    deepSearchParser = subparsers.add_parser("ds", help="Search in Notes")
+    deepSearchParser.add_argument(
+        "-ds", dest="dsearch", default=True, help=argparse.SUPPRESS
+    )
+    deepSearchParser.add_argument("substring", type=str, help="search substring")
+    deepSearchParser.add_argument(
+        "note_name",
+        type=str,
+        nargs="?",
+        default="",
+        help="Notes to search substring within",
+    )
+
+    # Config
+    configParser = subparsers.add_parser("config", help="Change config file")
+    configParser.add_argument(
+        "-cfg", dest="config", default=True, help=argparse.SUPPRESS
     )
 
     args = arguments.parse_args()
 
-    if args.dirOption and (args.alter is None and args.delete is None):
-        print("--dir only used in conjuction with --alter to create a project dir")
-        sys.exit()
     if len(sys.argv) < 2:
         args.list = True
+        args.contents = False
+        args.substring = ""
 
     return args
 
@@ -301,32 +322,20 @@ def parse_args() -> dict:
 def main():
     arguments = parse_args()
 
-    if len(arguments.view) == 1:
-        view_note(arguments.view[0])
-    elif len(arguments.view) > 1:
-        list_notes(
-            deep_search_for_text(
-                arguments.view[1],
-                note_selection(search_note_by_name(arguments.view[0])),
-            )
-        )
-    elif arguments.alter:
-        alter_note(arguments.alter, arguments.dirOption)
-    elif arguments.delete:
-        delete_note(arguments.delete, arguments.dirOption)
-    elif arguments.list:
-        list_notes(get_note_list())
-    elif arguments.sublist:
-        if arguments.sublist == True:
-            list_notes(get_note_list(), list_contents=True)
-        else:
-            list_notes(search_note_by_name(arguments.sublist), list_contents=True)
-    elif arguments.search:
-        search_note(arguments.search)
-    elif arguments.dsearch:
-        deep_search_within_note(arguments.dsearch)
-    elif arguments.configure:
-        configure_config(arguments.configure)
+    if hasattr(arguments, "add"):
+        add_note(arguments.note_name, arguments.note_text)
+    elif hasattr(arguments, "edit"):
+        edit_note(arguments.note_name)
+    elif hasattr(arguments, "list"):
+        search_note(arguments.substring, list_contents=arguments.contents)
+    elif hasattr(arguments, "delete"):
+        delete_note(arguments.note_name)
+    elif hasattr(arguments, "dsearch"):
+        deep_search_within_note(arguments.substring, arguments.note_name)
+    elif hasattr(arguments, "view"):
+        view_note(arguments.substring)
+    elif hasattr(arguments, "config"):
+        configure_config()
 
 
 if __name__ == "__main__":

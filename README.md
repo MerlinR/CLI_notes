@@ -21,17 +21,27 @@ Full examples of usage can be seen [here](Examples.md)
 
 ### Options
 
-    <text>                      Positional argument, a note name or text within a note
-    -a | --alter        <name>  Add/Alter a new note
-        --dir        <name>     Optional argument to  create a project directory then a note
-    -d | --delete       <name>  Deletes notes
-    -l | --list                 List the notes (Default action)
-    -ll| --sub-list             List notes and their table of contents
-    -s | --search       <text>  Search notes for text in a title.
-    -ds| --deep-search  <text>  deepsearch notes, searches string of text in title's and contents of notes.
+```
+positional arguments:
+  {v,add,edit,rm,ls,ds,config}
+                        Action sub-command help
+    v                   View Note
+    add                 Add new Notes
+        note_name           New Note Name
+        note_text           Quickly add Note text
 
-    -c | --config               Alter the configurations for CLI notes
-    -h | --help                 The help menu
+    edit                Edit Notes
+    rm                  Delete Note
+
+    ls                  List Notes
+        substring            search title substring
+        -c, --list-contents  List the contents of Notes
+
+    ds                  Search in Notes
+        substring            search title substring
+        -c, --list-contents  List the contents of Notes
+    config              Change config file
+```
 
 ## Configuration
 
@@ -75,11 +85,9 @@ $ python3 -m notes.notes
 
 - Unit Tests (more)
 - Redo Args
-    - "new / -n", "edit / -e", "rm / -d", "ls / -l", "ll", "find / -s", "grep / -ds", "config / -c"
-    - Easier edit (Split alter and edit, so edit searches for relevent note)
-    - Add "mv" note
+  - Add "mv" note
 - Add Auto-complete (mainly make editing easier)
-    - Ensure Edit, rm, search take Count_id / Shiet_id as inputs
+  - Ensure Edit, rm, search take Count_id / Shiet_id as inputs
 - search by Shiet note ID
 - Ability to delete dir
 - Store details in MD? (ID, Date, Tags)

@@ -6,7 +6,7 @@ import unittest
 
 from notes.lib.definitions import Note
 from notes.lib.settings import config
-from notes.notes import (alter_note, deep_search_for_text, delete_note,
+from notes.notes import (add_note, deep_search_for_text, delete_note,
                          get_note_list, search_note_by_name)
 
 TEST_NAME = "Test"
@@ -42,9 +42,10 @@ class TestStringMethods(unittest.TestCase):
                 "{} Does not match {}".format(orig.extra_info, expected.extra_info)
             )
 
-    def test_alter(self):
-        alter_note([TEST_NAME, TEST_MSG])
-        alter_note([TEST_NAME2, TEST_MSG2])
+    def test_add(self):
+        add_note(TEST_NAME, TEST_MSG)
+        add_note(TEST_NAME, no_edit = True)
+        add_note(TEST_NAME2, TEST_MSG2)
         self.assertTrue(
             os.path.exists(
                 os.path.join(self.test_dir, f"{TEST_NAME}.{config.get('extension')}")
@@ -78,7 +79,7 @@ class TestStringMethods(unittest.TestCase):
         expected_note = Note(
             path=f"{self.test_dir}/{TEST_NAME}.md",
         )
-        expected_note.extra_info = [f"#{TEST_NAME}\n{TEST_MSG}"]
+        expected_note.extra_info = [f"# {TEST_NAME}\n{TEST_MSG}"]
 
         found_list = deep_search_for_text(TEST_NAME)
 
@@ -94,6 +95,11 @@ class TestStringMethods(unittest.TestCase):
                 os.path.join(self.test_dir, f"{TEST_NAME}.{config.get('extension')}")
             )
         )
+
+    # unit tests run after sort, therefore x ensures runs last
+    def test_x_deletion_fail(self):
+        delete_note(TEST_NAME2, confirm=False)
+        delete_note(TEST_NAME2, confirm=False)
 
 
 if __name__ == "__main__":
