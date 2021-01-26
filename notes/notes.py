@@ -244,7 +244,7 @@ def parse_args() -> dict:
     )
 
     subparsers = arguments.add_subparsers(help="Action sub-command help")
-    arguments.add_argument("--version", action="version", version=f"%(prog)s {VERSION}")
+    arguments.add_argument("--version", action="version", version=f"%(prog)s {_version}")
 
     # View
     viewParser = subparsers.add_parser("view", help="View Note")
