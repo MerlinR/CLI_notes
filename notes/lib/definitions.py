@@ -50,7 +50,7 @@ class Note:
 
         return self.content_list
 
-    def text_search(self, substring: str) -> extra_info:
+    def text_search(self, substring: str) -> str:
         if self.extra_info:
             return self.extra_info
         matches = []

@@ -85,8 +85,8 @@ class Settings:
         with open(self.config_path, "w") as config_file:
             config.write(config_file)
 
-    def _config_error(self, message: str):
-        raise ValueError("ERROR: {} configuration: {}".format(self._config, message))
+    def _config_error(self, config: str, message: str):
+        raise ValueError("ERROR: {} configuration: {}".format(config, message))
 
     def _validate_editor(self, tool: str) -> str:
         default_editors = DEFAULT_EDITORS
@@ -97,11 +97,13 @@ class Settings:
                 print(f"ERROR: {tool} invalid, using {editor}")
                 return which(editor)
 
-        _config_error("Editor", "Cannot find usable editor {}".format(default_editors))
+        self._config_error(
+            "Editor", "Cannot find usable editor {}".format(default_editors)
+        )
 
     def _validate_view(self, view_mode: str) -> str:
         if view_mode not in VIEW_OPTIONS:
-            return options[0]
+            return VIEW_OPTIONS[0]
         else:
             return view_mode
 
@@ -123,7 +125,7 @@ class Settings:
         if extension.lower() in MARKDOWN_EXTENSIONS:
             return extension
         else:
-            return valid_extensions[0]
+            return MARKDOWN_EXTENSIONS[0]
 
     def get(self, key: str) -> str:
         if self._config.get(key):

@@ -75,10 +75,14 @@ $ python3 -m notes.notes
 
 - Unit Tests (more)
 - Redo Args
-    - "new", "edit", "del", "ls", "ll", "find", "grep", "config"
+    - "new / -n", "edit / -e", "rm / -d", "ls / -l", "ll", "find / -s", "grep / -ds", "config / -c"
     - Easier edit (Split alter and edit, so edit searches for relevent note)
+    - Add "mv" note
+- Add Auto-complete (mainly make editing easier)
+    - Ensure Edit, rm, search take Count_id / Shiet_id as inputs
 - search by Shiet note ID
 - Ability to delete dir
+- Store details in MD? (ID, Date, Tags)
 
 ### Wishlist
 

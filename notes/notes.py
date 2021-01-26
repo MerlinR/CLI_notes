@@ -25,7 +25,8 @@ def note_selection(note_list: List[Note]) -> Note:
 
     list_notes(note_list)
     options = [note.count_id for note in note_list]
-    print(f"Pleae Select Note: {options}")
+    msg = f"Pleae Select Note: {options}"
+    print(msg)
 
     option = None
     while option not in options:
@@ -61,7 +62,7 @@ def get_note_list() -> list:
     def search_all_notes(cur_path: str, indent: int = 0, dir_list=[]):
         prev_item = ""
 
-        for indx, item in enumerate(sorted(os.listdir(cur_path))):
+        for item in sorted(os.listdir(cur_path)):
             if "{}.{}".format(prev_item, config.get("extension")) == item:
                 continue
             if os.path.isdir(os.path.join(cur_path, item)) and "{}.{}".format(
@@ -102,7 +103,7 @@ def get_note_list() -> list:
 
 def view_note(view_note: str):
     if os.path.isfile(view_note):
-        relevent_notes = [Note(view_not)]
+        relevent_notes = [Note(view_note)]
     else:
         relevent_notes = search_note_by_name(view_note)
     found_note = None
@@ -131,12 +132,7 @@ def search_note_by_name(name: str) -> list:
 
 
 def list_notes(note_list: list, list_contents: bool = False):
-    note_indx = 0
-    note_indent = 0
-
     for note in note_list:
-        note_name = os.path.basename(note.path)
-        note_indent = note.indent
 
         print(
             f"{fontColor(Color.GREY, bright = True, style = Style.ITALIC)} ({note.count_id}){fontReset()}",
@@ -203,10 +199,8 @@ def delete_note(rm_note: str, deleteDir: bool = False, confirm: bool = True):
 
     choice = note_selection(relevent_notes)
 
-    if (
-        choice
-        and confirm
-        and confirm_choice("Do you wish to delete {}".format(choice.min_path))
+    if (choice and not confirm) or (
+        choice and confirm_choice("Do you wish to delete {}".format(choice.min_path))
     ):
         try:
             os.remove(choice.path)
