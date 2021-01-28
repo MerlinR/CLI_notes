@@ -121,7 +121,7 @@ def search_note_by_name(name: str, notes: List[Note] = None) -> list:
     if not notes:
         notes = get_note_list()
     relevent_notes = []
-    regObj = re.compile(f".*{name}.*")
+    regObj = re.compile(f".*{name.replace('/', '.')}.*")
 
     for note in notes:
         if regObj.match(str(note.min_path)):

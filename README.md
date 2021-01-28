@@ -59,15 +59,24 @@ Notes requires `python3` for installation and can be installed via:
 $ pip3 install .
 ```
 
+### Bash completion
+
+To install bash completion simply copy the `bash_completion/notes` into your bash completion directory, such as `/usr/share/bash-completion/completions/`
+
+----
+
+## Manual usage
+
 ### Requirements
 
+**Only required if not installing via pip**
 Only requirement being [MDV](https://github.com/axiros/terminal_markdown_viewer)
 
 ```
 $ pip3 install -R requirements.txt
 ```
 
-## Dev Running
+### Dev Running
 
 To run the script from git clone, locally use:
 
@@ -75,12 +84,13 @@ To run the script from git clone, locally use:
 $ python3 -m notes.notes
 ```
 
+---
+
 ## ToDo
 
 - Unit Tests (more)
-- Redo Args
-  - Add "mv" note
-- Add Auto-complete (mainly make editing easier)
+- Add "mv" note
+- Alter alter-complete to resolve dots and slashes
 - Ability to delete entire dir
 
 ### Wishlist

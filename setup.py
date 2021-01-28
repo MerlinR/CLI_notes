@@ -9,6 +9,7 @@ from notes.notes import _version
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+
 setuptools.setup(
     name="notes-cli",
     version=_version,

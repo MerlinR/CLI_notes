@@ -83,7 +83,7 @@ class Settings:
 
     def _config_error(self, config: str, message: str):
         raise ValueError("ERROR: {} configuration: {}".format(config, message))
-    
+
     def _validate_configurations(self, new_config: dict = None, all: bool = False):
         for configuration, value in new_config.items():
             if configuration == "editor" or all:
@@ -99,7 +99,6 @@ class Settings:
             elif configuration == "extension" or all:
                 self._validate_extension(value)
 
-    
     def _validate_editor(self, tool: str):
         default_editors = DEFAULT_EDITORS
         if which(tool.split(" ")[0]):
@@ -141,7 +140,7 @@ class Settings:
             self._set("extension", extension)
         else:
             self._set("extension", MARKDOWN_EXTENSIONS[0])
-    
+
     def _confirm_choice(self, msg: Optional[str] = False) -> bool:
         if msg:
             print(msg)

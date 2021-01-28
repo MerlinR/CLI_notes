@@ -1,0 +1,88 @@
+#/usr/bin/env bash
+
+_complete_specific_path() {
+  # declare variables
+  local _item _COMPREPLY _old_pwd
+
+  # if we already are in the completed directory, skip this part
+  if [ "${PWD}" != "$1" ]; then
+    _old_pwd="${PWD}"
+
+    # magic here: go the specific directory!
+    pushd "$1" &>/dev/null || return
+
+    # init completion and run _filedir inside specific directory
+    _init_completion -s || return
+    _filedir
+
+    # iterate on original replies
+    for _item in "${COMPREPLY[@]}"; do
+      # this check seems complicated, but it handles the case
+      # where you have files/dirs of the same name
+      # in the current directory and in the completed one:
+      # we want only one "/" appended
+      if [ -d "${_item}" ] && [[ "${_item}" != */ ]] && [ ! -d "${_old_pwd}/${_item}" ]; then
+        # append a slash if directory
+        _COMPREPLY+=("${_item}/")
+      else
+        _COMPREPLY+=("$(echo "$_item" | cut -f 1 -d '.')")
+      fi
+    done
+
+    # popd as early as possible
+    popd &>/dev/null
+
+    # if only one reply and it is a directory, don't append a space
+    # (don't know why we must check for length == 2 though)
+    if [ ${#_COMPREPLY[@]} -eq 2 ]; then
+      if [[ "${_COMPREPLY}" == */ ]]; then
+        compopt -o nospace
+      fi
+    fi
+
+    # set the values in the right COMPREPLY variable
+    COMPREPLY=( "${_COMPREPLY[@]}" )
+
+    # clean up
+    unset _COMPREPLY
+    unset _item
+  else
+    # we already are in the completed directory, easy
+    _init_completion -s || return
+    _filedir
+  fi
+}
+
+_notes()
+{
+	local cur prev words cword split
+	_init_completion -s || return
+
+	_expand || return
+
+	case $prev in
+        add|view|ds)
+			# argument optional but no completions available
+            return
+			;;
+		view|edit|rm)
+            _complete_specific_path "/home/mroe/.notes/notes"
+			return
+			;;
+		ls)
+            COMPREPLY=( $( compgen -W '--list-contents -c'  -- "$cur" ) )
+			return
+			;;
+	esac
+
+	$split && return
+
+	if [[ $cur == * ]]; then
+		COMPREPLY=( $( compgen -W 'view add edit rm ls config ds'  -- "$cur") )
+		[[ $COMPREPLY == *= ]] && compopt -o nospace
+		return
+	fi
+
+} &&
+
+complete -F _notes notes
