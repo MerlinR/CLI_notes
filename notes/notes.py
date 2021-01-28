@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 from subprocess import call
 from typing import List, Optional
+from types import SimpleNamespace
 
 from notes.lib.definitions import Note
 from notes.lib.misc import Color, Style, fontColor, fontReset
@@ -239,12 +240,23 @@ def configure_config():
 
 
 def parse_args() -> dict:
+    argument_options = ["view", "add", "rm", "edit", "ds", "ls", "config"]
+
+    # Argparse cant allow optional positional arguments with sub parser
+    # this hack pretends to be view argument for quick views
+    if len(sys.argv) == 2 and sys.argv[1] not in argument_options:
+        return SimpleNamespace(view=True, substring=sys.argv[1])
+    elif len(sys.argv) < 2:
+        return SimpleNamespace(list=True, contents=False, substring="")
+    
     arguments = argparse.ArgumentParser(
         description="Notes. Simple cli tool for creating and managing markdown notes."
     )
 
-    subparsers = arguments.add_subparsers(help="Action sub-command help")
     arguments.add_argument("--version", action="version", version=f"%(prog)s {_version}")
+
+
+    subparsers = arguments.add_subparsers(help="Action sub-command help")
 
     # View
     viewParser = subparsers.add_parser("view", help="View Note")
@@ -307,11 +319,6 @@ def parse_args() -> dict:
     )
 
     args = arguments.parse_args()
-
-    if len(sys.argv) < 2:
-        args.list = True
-        args.contents = False
-        args.substring = ""
 
     return args
 
