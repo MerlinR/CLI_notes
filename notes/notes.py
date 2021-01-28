@@ -235,8 +235,12 @@ def deep_search_within_note(search_text: str, search_note_name: str = None):
         list_notes(deep_search_for_text(search_text))
 
 
-def configure_config():
-    call(f"{config.get('editor')} {config.config_path}", shell=True)
+def configure_config(setting_name: str = None, new_value: str = None):
+    if not setting_name:
+        call(f"{config.get('editor')} {config.config_path}", shell=True)
+        return
+    if setting_name in config.get_config_options():
+        config.set(setting_name, new_value)
 
 
 def parse_args() -> dict:
@@ -318,8 +322,16 @@ def parse_args() -> dict:
     configParser.add_argument(
         "-cfg", dest="config", default=True, help=argparse.SUPPRESS
     )
-
+    configParser.add_argument(
+        "config_name", type=str, nargs="?", default=None, help="Config to change"
+    )
+    configParser.add_argument(
+        "new_value", type=str, nargs="?", default=None, help="new Config value"
+    )
     args = arguments.parse_args()
+
+    if hasattr(args, "config") and args.config_name and not args.new_value:
+        arguments.error("config_name requires a new_value")
 
     return args
 
@@ -340,7 +352,7 @@ def main():
     elif hasattr(arguments, "view"):
         view_note(arguments.substring)
     elif hasattr(arguments, "config"):
-        configure_config()
+        configure_config(arguments.config_name, arguments.new_value)
 
 
 if __name__ == "__main__":

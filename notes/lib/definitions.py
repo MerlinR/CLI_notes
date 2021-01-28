@@ -56,12 +56,12 @@ class Note:
         matches = []
         regex_str = (
             "((?:.*\n){0,"
-            + config.get("search_n_lines_up")
+            + str(config.get("search_n_lines_up"))
             + "}.*"
             + substring
             + ".*"
             + "(?:.*\n){0,"
-            + config.get("search_n_lines_down")
+            + str(config.get("search_n_lines_down"))
             + "})"
         )
         with open(self.path) as note_file:

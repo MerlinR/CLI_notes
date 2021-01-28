@@ -82,7 +82,6 @@ $ python3 -m notes.notes
   - Add "mv" note
 - Add Auto-complete (mainly make editing easier)
 - Ability to delete entire dir
-- Configure option to allow single config change rather the open file
 
 ### Wishlist
 

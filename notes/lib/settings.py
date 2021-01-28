@@ -60,11 +60,7 @@ class Settings:
                 self._extra["note_paths"].append(note_path)
         self._config["notes_location"] = ",".join(self._extra["note_paths"])
 
-        if path.exists(self._config["editor"]) is False:
-            self._config["editor"] = self._validate_editor(self._config["editor"])
-
-        self._config["view-mode"] = self._validate_view(self._config["view-mode"])
-        self._config["extension"] = self._validate_extension(self._config["extension"])
+        self._validate_configurations(self._config)
 
         self._extra["markdown_extensions"] = MARKDOWN_EXTENSIONS
         self._extra["primary_note_dir"] = self._extra["note_paths"][0]
@@ -87,27 +83,45 @@ class Settings:
 
     def _config_error(self, config: str, message: str):
         raise ValueError("ERROR: {} configuration: {}".format(config, message))
+    
+    def _validate_configurations(self, new_config: dict = None, all: bool = False):
+        for configuration, value in new_config.items():
+            if configuration == "editor" or all:
+                self._validate_editor(value)
+            elif configuration == "view-mode" or all:
+                self._validate_view(value)
+            elif configuration == "lines" or all:
+                self._validate_lines(value)
+            elif configuration == "search_n_lines_up" or all:
+                self._validate_lines([value, self._config["search_n_lines_down"]])
+            elif configuration == "search_n_lines_down" or all:
+                self._validate_lines([self._config["search_n_lines_up"], value])
+            elif configuration == "extension" or all:
+                self._validate_extension(value)
 
-    def _validate_editor(self, tool: str) -> str:
+    
+    def _validate_editor(self, tool: str):
         default_editors = DEFAULT_EDITORS
         if which(tool.split(" ")[0]):
-            return tool
+            self._set("editor", tool)
+            return
         for editor in default_editors:
             if which(editor):
                 print(f"ERROR: {tool} invalid, using {editor}")
-                return which(editor)
+                self._set("editor", which(editor))
+                return
 
         self._config_error(
             "Editor", "Cannot find usable editor {}".format(default_editors)
         )
 
-    def _validate_view(self, view_mode: str) -> str:
+    def _validate_view(self, view_mode: str):
         if view_mode not in VIEW_OPTIONS:
-            return VIEW_OPTIONS[0]
+            self._set("view-mode", VIEW_OPTIONS[0])
         else:
-            return view_mode
+            self._set("view-mode", view_mode)
 
-    def _validate_lines(self, lines: List[int]) -> List[int]:
+    def _validate_lines(self, lines: List[int]):
         newLines = []
         for line in range(len(lines)):
             if line > 0 and line < 5:
@@ -117,28 +131,17 @@ class Settings:
         if len(newLines) < 2:
             newLines.append(1)
 
-        return newLines[:2]
+        self._set("search_n_lines_up", newLines[0])
+        self._set("search_n_lines_down", newLines[1])
 
-    def _validate_extension(self, extension: str) -> str:
+    def _validate_extension(self, extension: str):
         if extension[:1] == ".":
             extension = extension[1:]
         if extension.lower() in MARKDOWN_EXTENSIONS:
-            return extension
+            self._set("extension", extension)
         else:
-            return MARKDOWN_EXTENSIONS[0]
-
-    def get(self, key: str) -> str:
-        if self._config.get(key):
-            return self._config[key]
-        else:
-            return self._extra.get(key)
-
-    def set(self, key: str, value: str):
-        if self._config.get(key):
-            self._config[key] = value
-        elif self._extra.get(key):
-            self._extra[key] = value
-
+            self._set("extension", MARKDOWN_EXTENSIONS[0])
+    
     def _confirm_choice(self, msg: Optional[str] = False) -> bool:
         if msg:
             print(msg)
@@ -150,6 +153,29 @@ class Settings:
                 print("\n Invalid Option. Please Enter a Valid Option.")
 
         return True if (confirm == "c") else False
+
+    def get_config_options(self) -> List[str]:
+        return DEFAULT_CONFIG.keys()
+
+    def get(self, key: str) -> str:
+        if self._config.get(key):
+            return self._config[key]
+        else:
+            return self._extra.get(key)
+
+    def _set(self, key: str, value: str):
+        if self._config.get(key):
+            self._config[key] = value
+        elif self._extra.get(key):
+            self._extra[key] = value
+
+    def set(self, key: str, value: str, save: bool = True):
+        if self._config.get(key):
+            self._validate_configurations({key: value})
+            if save:
+                self._write_config_file()
+        elif self._extra.get(key):
+            self._extra[key] = value
 
 
 config = Settings()

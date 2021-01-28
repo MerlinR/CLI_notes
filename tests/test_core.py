@@ -20,9 +20,9 @@ class TestStringMethods(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.test_dir = tempfile.mkdtemp()
-        config.set("note_paths", [cls.test_dir])
-        config.set("primary_note_dir", cls.test_dir)
-        config.set("extension", "md")
+        config.set("note_paths", [cls.test_dir], save = False)
+        config.set("primary_note_dir", cls.test_dir, save = False)
+        config.set("extension", "md", save = False)
 
     @classmethod
     def tearDownClass(cls):
