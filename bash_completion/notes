@@ -62,15 +62,15 @@ _notes()
 
 	case $prev in
         add|view|ds)
-			# argument optional but no completions available
-            return
+			  # argument optional but no completions available
+        return
 			;;
 		view|edit|rm)
-            _complete_specific_path "/home/mroe/.notes/notes"
+      _complete_specific_path $(notes config notes_location -g)
 			return
 			;;
 		ls)
-            COMPREPLY=( $( compgen -W '--list-contents -c'  -- "$cur" ) )
+      COMPREPLY=( $( compgen -W '--list-contents -c'  -- "$cur" ) )
 			return
 			;;
 	esac

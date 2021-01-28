@@ -235,11 +235,13 @@ def deep_search_within_note(search_text: str, search_note_name: str = None):
         list_notes(deep_search_for_text(search_text))
 
 
-def configure_config(setting_name: str = None, new_value: str = None):
+def configure_config(setting_name: str = None, new_value: str = None, get_value: bool = False):
     if not setting_name:
         call(f"{config.get('editor')} {config.config_path}", shell=True)
         return
-    if setting_name in config.get_config_options():
+    if setting_name in config.get_config_options() and get_value:
+        print(config.get(setting_name))
+    elif setting_name in config.get_config_options():
         config.set(setting_name, new_value)
 
 
@@ -328,10 +330,13 @@ def parse_args() -> dict:
     configParser.add_argument(
         "new_value", type=str, nargs="?", default=None, help="new Config value"
     )
+    configParser.add_argument(
+        "-g", "--get", dest="get_value", action="store_true", default=False, help="print config value"
+    )
     args = arguments.parse_args()
 
-    if hasattr(args, "config") and args.config_name and not args.new_value:
-        arguments.error("config_name requires a new_value")
+    if hasattr(args, "config") and args.config_name and (not args.new_value and not args.get_value):
+        arguments.error("config_name requires a new_value or --get")
 
     return args
 
@@ -352,7 +357,7 @@ def main():
     elif hasattr(arguments, "view"):
         view_note(arguments.substring)
     elif hasattr(arguments, "config"):
-        configure_config(arguments.config_name, arguments.new_value)
+        configure_config(arguments.config_name, arguments.new_value, arguments.get_value)
 
 
 if __name__ == "__main__":
