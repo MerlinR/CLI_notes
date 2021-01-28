@@ -90,7 +90,7 @@ $ python3 -m notes.notes
 
 - Unit Tests (more)
 - Add "mv" note
-- Alter alter-complete to resolve dots and slashes
+- Alter bash-complete to resolve dots and slashes
 - Ability to delete entire dir
 
 ### Wishlist

@@ -61,9 +61,9 @@ _notes()
 	_expand || return
 
 	case $prev in
-        add|view|ds)
-			  # argument optional but no completions available
-        return
+    add|view|ds)
+			# argument optional but no completions available
+      return
 			;;
 		view|edit|rm)
       _complete_specific_path $(notes config notes_location -g)
