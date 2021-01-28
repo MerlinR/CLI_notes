@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import os
 import subprocess
+
 import setuptools
 
 from notes.notes import _version

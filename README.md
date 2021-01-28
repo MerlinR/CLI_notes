@@ -81,7 +81,6 @@ $ python3 -m notes.notes
 - Redo Args
   - Add "mv" note
 - Add Auto-complete (mainly make editing easier)
-- Ensure Edit, rm, search take Count_id as inputs
 - Ability to delete entire dir
 - Configure option to allow single config change rather the open file
 

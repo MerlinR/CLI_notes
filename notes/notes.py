@@ -5,8 +5,8 @@ import re
 import sys
 from pathlib import Path
 from subprocess import call
-from typing import List, Optional
 from types import SimpleNamespace
+from typing import List, Optional
 
 from notes.lib.definitions import Note
 from notes.lib.misc import Color, Style, fontColor, fontReset
@@ -248,13 +248,14 @@ def parse_args() -> dict:
         return SimpleNamespace(view=True, substring=sys.argv[1])
     elif len(sys.argv) < 2:
         return SimpleNamespace(list=True, contents=False, substring="")
-    
+
     arguments = argparse.ArgumentParser(
         description="Notes. Simple cli tool for creating and managing markdown notes."
     )
 
-    arguments.add_argument("--version", action="version", version=f"%(prog)s {_version}")
-
+    arguments.add_argument(
+        "--version", action="version", version=f"%(prog)s {_version}"
+    )
 
     subparsers = arguments.add_subparsers(help="Action sub-command help")
 
