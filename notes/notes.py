@@ -275,7 +275,7 @@ def parse_args() -> dict:
     addNoteparser.add_argument("-n", dest="add", default=True, help=argparse.SUPPRESS)
     addNoteparser.add_argument("note_name", type=str, help="New Note Name")
     addNoteparser.add_argument(
-        "note_text", type=str, default="", help="Quickly add Note text"
+        "note_text", type=str, nargs="?", default="", help="Quickly add Note text"
     )
 
     # Edit
