@@ -251,9 +251,22 @@ def parse_args() -> dict:
     # Argparse cant allow optional positional arguments with sub parser
     # this hack pretends to be view argument for quick views
     if len(sys.argv) == 2 and sys.argv[1] not in argument_options:
-        return SimpleNamespace(view=True, substring=sys.argv[1])
+        return SimpleNamespace(
+            view=True,
+            substring=sys.argv[1],
+        )
+    elif len(sys.argv) == 3 and sys.argv[1] not in argument_options:
+        return SimpleNamespace(
+            dsearch=True,
+            substring=sys.argv[1],
+            note_name=sys.argv[2],
+        )
     elif len(sys.argv) < 2:
-        return SimpleNamespace(list=True, contents=False, substring="")
+        return SimpleNamespace(
+            list=True,
+            contents=False,
+            substring="",
+        )
 
     arguments = argparse.ArgumentParser(
         description="Notes. Simple cli tool for creating and managing markdown notes."
