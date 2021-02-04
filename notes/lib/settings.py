@@ -53,7 +53,10 @@ class Settings:
         self._extra["note_paths"] = []
         for note_path in self._config["notes_location"].split(","):
             if path.exists(note_path) is False:
-                if self._confirm_choice(f"Path {note_path} does not exist, create it?"):
+                if note_path == path.join(DEFAULT_LOC, "notes":
+                    makedirs(note_path)
+                    self._extra["note_paths"].append(note_path)
+                elif self._confirm_choice(f"Path {note_path} does not exist, create it?"):
                     makedirs(note_path)
                     self._extra["note_paths"].append(note_path)
             else:
